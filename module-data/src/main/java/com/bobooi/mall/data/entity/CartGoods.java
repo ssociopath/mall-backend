@@ -21,7 +21,7 @@ public class CartGoods {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer cartGoodsId;
-    private Integer cartId;
+    private Integer customerId;
     private Integer productId;
     private String productAmount;
 }

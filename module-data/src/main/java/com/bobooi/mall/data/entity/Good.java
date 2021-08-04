@@ -9,6 +9,7 @@ import javax.persistence.*;
 /**
  * @author bobo
  * @date 2021/8/3
+ * // TODO 注意，是秒杀测试类，不可作为业务使用
  */
 
 @Data
