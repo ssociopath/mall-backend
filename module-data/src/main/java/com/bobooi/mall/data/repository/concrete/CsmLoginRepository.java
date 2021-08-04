@@ -6,6 +6,7 @@ import com.bobooi.mall.data.repository.DataRepository;
 /**
  * @author bobo
  * @date 2021/3/31
+    CsmLogin find
  */
 
 public interface CsmLoginRepository extends DataRepository<CsmLogin, Integer> {
