@@ -3,6 +3,7 @@ package com.bobooi.mall.api.controller;
 import com.bobooi.mall.api.module.vo.GoodsVO;
 import com.bobooi.mall.common.response.ApplicationResponse;
 import com.bobooi.mall.data.entity.PdtCategory;
+import com.bobooi.mall.data.entity.PdtDetailInf;
 import com.bobooi.mall.data.repository.concrete.SupplierInfoRepository;
 import com.bobooi.mall.data.service.concrete.GoodsService;
 import io.swagger.annotations.Api;
