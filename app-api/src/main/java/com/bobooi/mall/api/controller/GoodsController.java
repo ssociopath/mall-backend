@@ -3,13 +3,10 @@ package com.bobooi.mall.api.controller;
 import com.bobooi.mall.api.module.vo.GoodsVO;
 import com.bobooi.mall.common.response.ApplicationResponse;
 import com.bobooi.mall.data.entity.PdtCategory;
-import com.bobooi.mall.data.repository.concrete.PdtCategoryRepository;
 import com.bobooi.mall.data.repository.concrete.SupplierInfoRepository;
 import com.bobooi.mall.data.service.concrete.GoodsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -29,8 +26,7 @@ import java.util.stream.Collectors;
 public class GoodsController {
     @Resource
     SupplierInfoRepository supplierInfoRepository;
-    @Resource
-    PdtCategoryRepository pdtCategoryRepository;
+
     @Resource
     GoodsService goodsService;
 
@@ -42,13 +38,13 @@ public class GoodsController {
     @ApiOperation("获取所有商品分类列表")
     @GetMapping("/category")
     public ApplicationResponse<List<PdtCategory>> getAllProductCategories() {
-        return ApplicationResponse.succeed(pdtCategoryRepository.findAll());
+        return ApplicationResponse.succeed(goodsService.getProductCategory());
     }
 
     /**
      * 根据商品分类id获取所有商品数据（未分页）
      *
-     * @return k
+     * @return
      */
     @ApiOperation("根据商品分类id获取所有商品展示数据")
     @GetMapping("/allProductInfo/{categoryId}")
@@ -60,5 +56,16 @@ public class GoodsController {
                                 supplierInfoRepository.findBySupplierId(pdtInfo.getSupplierId()))
                 ).collect(Collectors.toList())
         );
+    }
+
+    /**
+     * 根据商品id获取商品详细数据
+     *
+     * @return
+     */
+    @ApiOperation("根据商品id获取商品详细数据")
+    @GetMapping("/productDetailInfo/{productId}")
+    public ApplicationResponse<PdtDetailInf> getPdtDetailInfoByProductId(@PathVariable Integer productId) {
+        return ApplicationResponse.succeed(goodsService.getPdtDetailInfoByPdtId(productId));
     }
 }
