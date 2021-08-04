@@ -17,7 +17,7 @@ import javax.persistence.*;
 @Table(name="supplier_info")
 @NoArgsConstructor
 @AllArgsConstructor
-public class SupplierInfo {
+public class SupplierInf {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer supplierId;

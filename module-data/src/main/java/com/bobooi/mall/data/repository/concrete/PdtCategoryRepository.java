@@ -1,12 +1,13 @@
 package com.bobooi.mall.data.repository.concrete;
 
 import com.bobooi.mall.data.entity.PdtCategory;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.bobooi.mall.data.repository.DataRepository;
 
 /**
- * @author bobo
+ * 类描述
+ *
+ * @author <a href="mailto:873406454@qq.com">Li Hangfei</a>
  * @date 2021/8/4
  */
-
-public interface PdtCategoryRepository extends JpaRepository<PdtCategory, Integer> {
+public interface PdtCategoryRepository extends DataRepository<PdtCategory,Integer> {
 }
