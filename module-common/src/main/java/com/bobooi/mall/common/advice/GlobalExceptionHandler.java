@@ -29,19 +29,18 @@ public class GlobalExceptionHandler {
     public ApplicationResponse<String> defaultErrorHandler(HttpServletRequest request, Exception exception){
         if(exception instanceof ApplicationException){
             ApplicationException applicationException = (ApplicationException) exception;
-            log.info("捕获应用错误", exception);
+            log.info("捕获应用错误："+applicationException.getResponseMessage());
             return ApplicationResponse.fail(applicationException.getSystemCode(), applicationException.getResponseMessage());
         } else if (exception instanceof IllegalArgumentException
                 || exception instanceof HttpMessageNotReadableException
-                || exception instanceof MethodArgumentNotValidException
                 || exception instanceof BindException) {
-            log.info("捕获参数错误", exception);
+            log.info("捕获参数错误");
             return ApplicationResponse.fail(ARGUMENT_WRONG);
         } else if (exception instanceof HttpRequestMethodNotSupportedException) {
-            log.debug("捕获调用方法错误", exception);
+            log.debug("捕获调用方法错误");
             return ApplicationResponse.fail(REQUEST_METHOD_NOT_SUPPPORTED);
         } else if (exception instanceof ShiroException){
-            log.debug("捕获权限错误", exception);
+            log.debug("捕获权限错误");
             return ApplicationResponse.fail(NO_PERMISSION);
         }
         log.error("捕获意外异常", exception);

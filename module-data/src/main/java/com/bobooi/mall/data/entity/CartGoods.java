@@ -23,5 +23,6 @@ public class CartGoods {
     private Integer cartGoodsId;
     private Integer customerId;
     private Integer productId;
-    private String productAmount;
+    private Integer productAmount;
+    private Integer productTypeId;
 }

@@ -14,9 +14,9 @@ public class Constant {
 
     /**
      * accessToken过期时间（SECOND）
-     * //TODO 测试30s，测试完毕改回五分钟
+     * //TODO 测试18000s，测试完毕改回五分钟
      */
-    public static final String ACCESS_TOKEN_EXPIRE_TIME = "30";
+    public static final String ACCESS_TOKEN_EXPIRE_TIME = "18000";
 
     /**
      * refreshToken过期时间（SECOND）
