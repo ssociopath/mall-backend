@@ -4,6 +4,8 @@ import com.bobooi.mall.data.entity.PdtAddiInf;
 import com.bobooi.mall.data.repository.DataRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * 类描述
  *
@@ -19,4 +21,8 @@ public interface PdtAddiInfoRepository extends DataRepository<PdtAddiInf,Integer
      */
     @Transactional
     void deleteAllByProductId(Integer productId);
+  
+    List<PdtAddiInf> findAllByProductId(Integer productId);
+  
+    PdtAddiInf findByProductIdAndProductTypeId(Integer productId, Integer productTypeId);
 }

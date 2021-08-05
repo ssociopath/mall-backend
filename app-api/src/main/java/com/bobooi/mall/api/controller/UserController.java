@@ -59,8 +59,7 @@ public class UserController {
     @GetMapping("/info")
     @RequiresAuthentication
     public ApplicationResponse<UserVO> info() {
-        String account = JwtUtil.getCurrentClaim(JwtUtil.ACCOUNT);
-        CsmLogin csmLogin = userService.getUserByAccount(account);
+        CsmLogin csmLogin = userService.info();
         // 用户是否存在
         if (csmLogin == null) {
             return ApplicationResponse.fail(SystemCodeEnum.NEED_LOGIN,"未登录");
@@ -118,9 +117,9 @@ public class UserController {
      * @return 剔除结果
      */
     @ApiOperation("注销")
-    @DeleteMapping("/online")
-    public ApplicationResponse<String> deleteOnline(Integer id) {
-        CsmLogin csmLogin = userService.getOneOr(id, null);
+    @DeleteMapping("/logout")
+    public ApplicationResponse<String> deleteOnline() {
+        CsmLogin csmLogin = userService.info();
         if(csmLogin ==null){
             return ApplicationResponse.fail(SystemCodeEnum.ARGUMENT_WRONG, "用户不存在！");
         }

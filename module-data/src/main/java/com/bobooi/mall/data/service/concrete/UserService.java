@@ -4,6 +4,7 @@ import com.bobooi.mall.common.exception.ApplicationException;
 import com.bobooi.mall.common.exception.AssertUtils;
 import com.bobooi.mall.common.response.SystemCodeEnum;
 import com.bobooi.mall.common.utils.misc.Constant;
+import com.bobooi.mall.common.utils.misc.JwtUtil;
 import com.bobooi.mall.data.repository.concrete.CsmLoginRepository;
 import com.bobooi.mall.data.service.BaseDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -39,5 +40,10 @@ public class UserService extends BaseDataService<CsmLogin, Integer> {
     public boolean match(String account, String password){
         CsmLogin loginCsmLogin = csmLoginRepository.findCsmLoginByLoginNameAndPassword(account, DigestUtils.sha1Hex(password));
         return null!= loginCsmLogin;
+    }
+
+    public CsmLogin info(){
+        String account = JwtUtil.getCurrentClaim(JwtUtil.ACCOUNT);
+        return getUserByAccount(account);
     }
 }

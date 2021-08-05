@@ -7,22 +7,20 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 /**
- * 类描述
- *
- * @author <a href="mailto:873406454@qq.com">Li Hangfei</a>
- * @date 2021/8/4
+ * @author bobo
+ * @date 2021/8/3
+ * // TODO 注意，是秒杀测试类，不可作为业务使用
  */
+
 @Data
 @Entity
-@Table(name="cart_goods")
+@Table(name="order_msg")
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartGoods {
+public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer cartGoodsId;
+    private Integer orderId;
+    private Integer goodId;
     private Integer customerId;
-    private Integer productId;
-    private Integer productAmount;
-    private Integer productTypeId;
 }
