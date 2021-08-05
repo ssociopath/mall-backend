@@ -3,9 +3,11 @@ package com.bobooi.mall.data.service.concrete;
 import com.bobooi.mall.data.entity.PdtCategory;
 import com.bobooi.mall.data.entity.PdtInf;
 import com.bobooi.mall.data.entity.PdtDetailInf;
+import com.bobooi.mall.data.entity.SupplierInf;
 import com.bobooi.mall.data.repository.concrete.PdtCategoryRepository;
 import com.bobooi.mall.data.repository.concrete.PdtDetailViewRepository;
 import com.bobooi.mall.data.repository.concrete.PdtInfoRepository;
+import com.bobooi.mall.data.repository.concrete.SupplierInfoRepository;
 import com.bobooi.mall.data.service.BaseDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,9 @@ public class GoodsService extends BaseDataService<PdtInf,Integer> {
 
     @Resource
     PdtDetailViewRepository pdtDetailViewRepository;
+
+    @Resource
+    SupplierInfoRepository supplierInfoRepository;
 
     /**
      * 获取商品分类信息
@@ -57,5 +62,23 @@ public class GoodsService extends BaseDataService<PdtInf,Integer> {
      */
     public PdtDetailInf getPdtDetailInfoByPdtId(Integer productId){
         return pdtDetailViewRepository.findByProductId(productId);
+    }
+
+    /**
+     * 获取所有商品详细信息返回给管理员
+     *
+     * @return
+     */
+    public List<PdtDetailInf> getAllPdtDetailInfo(){
+        return pdtDetailViewRepository.findAll();
+    }
+
+    /**
+     * 获取所有供应商信息给管理员
+     *
+     * @return
+     */
+    public List<SupplierInf> getAllSupplierInfo(){
+        return supplierInfoRepository.findAll();
     }
 }

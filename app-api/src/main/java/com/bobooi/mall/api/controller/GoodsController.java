@@ -4,6 +4,7 @@ import com.bobooi.mall.api.module.vo.GoodsVO;
 import com.bobooi.mall.common.response.ApplicationResponse;
 import com.bobooi.mall.data.entity.PdtCategory;
 import com.bobooi.mall.data.entity.PdtDetailInf;
+import com.bobooi.mall.data.entity.SupplierInf;
 import com.bobooi.mall.data.repository.concrete.SupplierInfoRepository;
 import com.bobooi.mall.data.service.concrete.GoodsService;
 import io.swagger.annotations.Api;
@@ -69,4 +70,28 @@ public class GoodsController {
     public ApplicationResponse<PdtDetailInf> getPdtDetailInfoByProductId(@PathVariable Integer productId) {
         return ApplicationResponse.succeed(goodsService.getPdtDetailInfoByPdtId(productId));
     }
+
+    /**
+     * 获取所有商品详细数据
+     *
+     * @return
+     */
+    @ApiOperation("获取所有商品详细数据")
+    @GetMapping("/allProductDetailInfo")
+    public ApplicationResponse<List<PdtDetailInf>> getAllPdtDetailInfo() {
+        return ApplicationResponse.succeed(goodsService.getAllPdtDetailInfo());
+    }
+
+    /**
+     * 获取所有供应商数据给管理员
+     *
+     * @return
+     */
+    @ApiOperation("获取所有供应商数据给管理员")
+    @GetMapping("/allSupplierInfo")
+    public ApplicationResponse<List<SupplierInf>> getAllSupplierInfo() {
+        return ApplicationResponse.succeed(goodsService.getAllSupplierInfo());
+    }
+
+
 }
