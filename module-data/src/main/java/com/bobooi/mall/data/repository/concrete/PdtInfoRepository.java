@@ -2,6 +2,7 @@ package com.bobooi.mall.data.repository.concrete;
 
 import com.bobooi.mall.data.entity.PdtInf;
 import com.bobooi.mall.data.repository.DataRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,4 +28,13 @@ public interface PdtInfoRepository extends DataRepository<PdtInf,Integer> {
      * @return
      */
     PdtInf findByProductId(Integer productId);
+
+    /**
+     * 根据商品id删除商品信息
+     *
+     * @param productId 商品id
+     * @return
+     */
+    @Transactional
+    void deleteByProductId(Integer productId);
 }

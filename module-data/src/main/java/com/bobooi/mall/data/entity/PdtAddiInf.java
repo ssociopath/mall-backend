@@ -22,5 +22,5 @@ public class PdtAddiInf {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer productAdditionInfoId;
     private Integer productId;
-    private Integer  productTypeId;
+    private Integer productTypeId;
 }
