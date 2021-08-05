@@ -22,8 +22,13 @@ import javax.persistence.Table;
 @AllArgsConstructor
 public class PdtDetailInf {
     @Id
+    private String id;
+
     @Column
     private Integer productId;
+
+    @Column
+    private String categoryName;
 
     @Column
     private String productName;
@@ -45,4 +50,7 @@ public class PdtDetailInf {
 
     @Column
     private String productTypeName;
+
+    @Column
+    private String supplierAddress;
 }

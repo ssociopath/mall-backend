@@ -20,7 +20,7 @@ import javax.persistence.*;
 public class PdtAddiInf {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer productAddtionInfoId;
+    private Integer productAdditionInfoId;
     private Integer productId;
-    private Integer  productTypeId;
+    private Integer productTypeId;
 }
