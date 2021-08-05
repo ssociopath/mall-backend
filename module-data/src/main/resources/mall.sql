@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : ddl
+ Source Server         : LK_Connection
  Source Server Type    : MySQL
- Source Server Version : 50720
+ Source Server Version : 80018
  Source Host           : localhost:3306
- Source Schema         : mallfinal
+ Source Schema         : mall
 
  Target Server Type    : MySQL
- Target Server Version : 50720
+ Target Server Version : 80018
  File Encoding         : 65001
 
- Date: 04/08/2021 21:47:02
+ Date: 05/08/2021 18:08:48
 */
 
 SET NAMES utf8mb4;
@@ -26,14 +26,9 @@ CREATE TABLE `cart_goods`  (
   `customer_id` int(10) UNSIGNED NOT NULL COMMENT '用户ID',
   `product_id` int(10) UNSIGNED NOT NULL COMMENT '商品ID',
   `product_amount` int(11) NOT NULL COMMENT '商品数量',
-  `product_type_id` int(10) NOT NULL COMMENT '商品型号ID',
-  PRIMARY KEY (`cart_goods_id`) USING BTREE,
-  INDEX `customer_idx`(`customer_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '购物车商品表' ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of cart_goods
--- ----------------------------
+  `product_type_id` int(10) NOT NULL COMMENT '商品型号id',
+  PRIMARY KEY (`cart_goods_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '购物车商品表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for customer_addr
@@ -46,7 +41,7 @@ CREATE TABLE `customer_addr`  (
   `address` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '具体的地址门牌号',
   `is_default` tinyint(4) NOT NULL COMMENT '是否为默认地址',
   PRIMARY KEY (`customer_addr_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户地址表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户地址表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of customer_addr
@@ -71,9 +66,8 @@ CREATE TABLE `customer_inf`  (
   `mobile_phone` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '手机号',
   `gender` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '性别',
   `user_point` int(11) NOT NULL DEFAULT 0 COMMENT '用户积分',
-  PRIMARY KEY (`customer_inf_id`) USING BTREE,
-  INDEX `customer_userpoint`(`customer_id`, `user_point`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户信息表' ROW_FORMAT = DYNAMIC;
+  PRIMARY KEY (`customer_inf_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of customer_inf
@@ -94,7 +88,7 @@ CREATE TABLE `customer_login`  (
   `user_stats` tinyint(4) NOT NULL DEFAULT 1 COMMENT '用户状态',
   PRIMARY KEY (`customer_id`) USING BTREE,
   INDEX `login_name_password`(`login_name`, `password`) USING BTREE COMMENT '登录名与密码联合索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户登录表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户登录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of customer_login
@@ -113,9 +107,9 @@ CREATE TABLE `customer_point_log`  (
   `customer_id` int(10) UNSIGNED NOT NULL COMMENT '用户ID',
   `source_id` tinyint(3) UNSIGNED NOT NULL COMMENT '积分来源编号：0订单，1签到，2活动',
   `change_point` smallint(6) NOT NULL DEFAULT 0 COMMENT '变更积分数',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '积分日志生成时间',
+  `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '积分日志生成时间',
   PRIMARY KEY (`point_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户积分日志表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户积分日志表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of customer_point_log
@@ -136,13 +130,8 @@ CREATE TABLE `order_detail`  (
   `order_id` int(10) UNSIGNED NOT NULL COMMENT '订单表ID',
   `product_id` int(10) UNSIGNED NOT NULL COMMENT '订单商品ID',
   `product_cnt` int(11) NOT NULL DEFAULT 1 COMMENT '购买商品数量',
-  PRIMARY KEY (`order_detail_id`) USING BTREE,
-  INDEX `order_product_id`(`order_id`, `product_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单详情表' ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of order_detail
--- ----------------------------
+  PRIMARY KEY (`order_detail_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单详情表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for order_master
@@ -157,15 +146,10 @@ CREATE TABLE `order_master`  (
   `order_money` decimal(8, 2) NOT NULL COMMENT '订单金额',
   `district_money` decimal(8, 2) NOT NULL DEFAULT 0.00 COMMENT '优惠金额',
   `payment_money` decimal(8, 2) NOT NULL DEFAULT 0.00 COMMENT '支付金额',
-  `pay_time` timestamp NULL DEFAULT NULL COMMENT '支付时间',
+  `pay_time` timestamp(0) NULL DEFAULT NULL COMMENT '支付时间',
   `order_status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '订单状态',
-  PRIMARY KEY (`order_id`) USING BTREE,
-  INDEX `order_customer_cusaddr_id`(`order_id`, `customer_id`, `customer_addr_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单主表' ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of order_master
--- ----------------------------
+  PRIMARY KEY (`order_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单主表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for permission
@@ -176,7 +160,7 @@ CREATE TABLE `permission`  (
   `code` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '权限编码',
   `name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '操作名称',
   PRIMARY KEY (`permission_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of permission
@@ -194,10 +178,9 @@ DROP TABLE IF EXISTS `product_addition_info`;
 CREATE TABLE `product_addition_info`  (
   `product_addition_info_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `product_id` int(10) UNSIGNED NOT NULL COMMENT '商品ID',
-  `product_type_id` int(10) NOT NULL COMMENT '商品型号ID',
-  PRIMARY KEY (`product_addition_info_id`) USING BTREE,
-  INDEX `product_type_id`(`product_id`, `product_type_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 41 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品附加信息表' ROW_FORMAT = DYNAMIC;
+  `product_type_id` int(10) NOT NULL COMMENT '商品型号id',
+  PRIMARY KEY (`product_addition_info_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 43 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品附加信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of product_addition_info
@@ -251,7 +234,7 @@ CREATE TABLE `product_category`  (
   `category_id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '分类ID',
   `category_name` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '分类名称',
   PRIMARY KEY (`category_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品分类表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品分类表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of product_category
@@ -284,15 +267,14 @@ CREATE TABLE `product_info`  (
   `description` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '商品描述',
   `inventory` int(10) NOT NULL COMMENT '商品库存',
   `pic_url` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '商品图片',
-  `rest_time` timestamp NULL DEFAULT NULL COMMENT '秒杀字段',
-  PRIMARY KEY (`product_id`) USING BTREE,
-  INDEX `category_id`(`category_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品信息表' ROW_FORMAT = DYNAMIC;
+  `rest_time` timestamp(0) NULL DEFAULT NULL COMMENT '秒杀字段',
+  PRIMARY KEY (`product_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of product_info
 -- ----------------------------
-INSERT INTO `product_info` VALUES (1, '麦芒5全网通', 1, 1, 7299.00, '国产手机', 20, 'http://img.alicdn.com/bao/uploaded/i1/1659916565/TB2EWe8aA1M.eBjSZFOXXc0rFXa_!!1659916565.jpg', NULL);
+INSERT INTO `product_info` VALUES (1, '麦芒', 1, 1, 5200.00, '全新系列国产手机', 100, 'http://img.alicdn.com/bao/uploaded/i1/1659916565/TB2EWe8aA1M.eBjSZFOXXc0rFXa_!!1659916565.jpg', NULL);
 INSERT INTO `product_info` VALUES (2, '华为honor/荣耀 V8 大屏4G智能拍照手机指纹解锁官方正品', 1, 1, 3399.00, '国产手机', 30, 'http://img.alicdn.com/bao/uploaded/i2/TB1QGBIKpXXXXXcaXXXHctQ8pXX_022619.jpg', NULL);
 INSERT INTO `product_info` VALUES (3, 'Apple/苹果 iPhone 7 Plus 128G 全网通4G智能手机', 1, 2, 6999.00, '非国产手机', 15, 'http://img.alicdn.com/bao/uploaded/i2/TB1bL9PNXXXXXcmaXXXeDqP9XXX_034934.jpg', NULL);
 INSERT INTO `product_info` VALUES (4, '预售Xiaomi/小米 红米手机4A 超长待机双卡双系统超薄智能机', 1, 3, 2999.00, '国产手机', 20, 'http://img.alicdn.com/bao/uploaded/i5/TB1KaeAOXXXXXcUapXXLpWA8VXX_032158.jpg', NULL);
@@ -321,7 +303,7 @@ CREATE TABLE `product_type`  (
   `product_type_id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '型号id',
   `product_type_name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '商品型号名',
   PRIMARY KEY (`product_type_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品型号表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品型号表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of product_type
@@ -351,11 +333,7 @@ CREATE TABLE `punch_in`  (
   `month` tinyint(2) NOT NULL COMMENT '月份',
   `daily_bitmap` int(255) NOT NULL COMMENT '签到图',
   PRIMARY KEY (`punch_in_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of punch_in
--- ----------------------------
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for role
@@ -365,7 +343,7 @@ CREATE TABLE `role`  (
   `role_id` int(11) NOT NULL AUTO_INCREMENT,
   `role_name` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '角色名',
   PRIMARY KEY (`role_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of role
@@ -382,7 +360,7 @@ CREATE TABLE `role_permission`  (
   `permission_id` int(11) NOT NULL COMMENT '权限ID',
   `role_id` int(11) NOT NULL COMMENT '角色ID',
   PRIMARY KEY (`role_permission_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of role_permission
@@ -401,9 +379,8 @@ CREATE TABLE `supplier_info`  (
   `supplier_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '供应商ID',
   `supplier_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '供应商名称',
   `address` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '供应商地址',
-  PRIMARY KEY (`supplier_id`) USING BTREE,
-  INDEX `supplier_id_name`(`supplier_id`, `supplier_name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '供应商信息表' ROW_FORMAT = DYNAMIC;
+  PRIMARY KEY (`supplier_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '供应商信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of supplier_info
@@ -419,12 +396,12 @@ INSERT INTO `supplier_info` VALUES (6, '三星', '首尔');
 -- View structure for product_detail_view
 -- ----------------------------
 DROP VIEW IF EXISTS `product_detail_view`;
-CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `product_detail_view` AS select `product_info`.`product_id` AS `product_id`,`product_info`.`product_name` AS `product_name`,`product_info`.`description` AS `description`,`product_info`.`pic_url` AS `pic_url`,`product_info`.`price` AS `price`,`product_info`.`inventory` AS `inventory`,`supplier_info`.`supplier_name` AS `supplier_name`,`product_type`.`product_type_name` AS `product_type_name` from (((`product_info` join `supplier_info`) join `product_type`) join `product_addition_info`) where ((`product_info`.`product_id` = `product_addition_info`.`product_id`) and (`product_info`.`supplier_id` = `supplier_info`.`supplier_id`) and (`product_type`.`product_type_id` = `product_addition_info`.`product_type_id`));
+CREATE ALGORITHM = UNDEFINED DEFINER = `root`@`localhost` SQL SECURITY DEFINER VIEW `product_detail_view` AS select row_number() OVER (ORDER BY `product_info`.`product_id`)  AS `id`,`product_category`.`category_name` AS `category_name`,`product_info`.`product_id` AS `product_id`,`product_info`.`product_name` AS `product_name`,`product_info`.`pic_url` AS `pic_url`,`product_info`.`price` AS `price`,`product_info`.`inventory` AS `inventory`,`product_info`.`description` AS `description`,`product_type`.`product_type_name` AS `product_type_name`,`supplier_info`.`supplier_name` AS `supplier_name`,`supplier_info`.`address` AS `supplier_address` from ((((`product_info` join `supplier_info`) join `product_type`) join `product_addition_info`) join `product_category`) where ((`product_info`.`product_id` = `product_addition_info`.`product_id`) and (`product_info`.`supplier_id` = `supplier_info`.`supplier_id`) and (`product_type`.`product_type_id` = `product_addition_info`.`product_type_id`) and (`product_info`.`category_id` = `product_category`.`category_id`) and (`product_type`.`product_type_id` = `product_addition_info`.`product_type_id`));
 
 -- ----------------------------
 -- View structure for product_view
 -- ----------------------------
 DROP VIEW IF EXISTS `product_view`;
-CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `product_view` AS select `product_info`.`category_id` AS `category_id`,`product_info`.`product_id` AS `product_id`,`product_info`.`product_name` AS `product_name`,`product_info`.`price` AS `price`,`product_info`.`pic_url` AS `pic_url`,`supplier_info`.`supplier_name` AS `supplier_name` from (`product_info` join `supplier_info`) where (`product_info`.`supplier_id` = `supplier_info`.`supplier_id`);
+CREATE ALGORITHM = UNDEFINED DEFINER = `root`@`localhost` SQL SECURITY DEFINER VIEW `product_view` AS select `product_info`.`category_id` AS `category_id`,`product_info`.`product_id` AS `product_id`,`product_info`.`product_name` AS `product_name`,`product_info`.`price` AS `price`,`product_info`.`pic_url` AS `pic_url`,`supplier_info`.`supplier_name` AS `supplier_name` from (`product_info` join `supplier_info`) where (`product_info`.`supplier_id` = `supplier_info`.`supplier_id`);
 
 SET FOREIGN_KEY_CHECKS = 1;
