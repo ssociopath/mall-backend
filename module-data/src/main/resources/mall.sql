@@ -11,7 +11,7 @@
  Target Server Version : 80018
  File Encoding         : 65001
 
- Date: 05/08/2021 18:08:48
+ Date: 06/08/2021 22:39:12
 */
 
 SET NAMES utf8mb4;
@@ -26,9 +26,15 @@ CREATE TABLE `cart_goods`  (
   `customer_id` int(10) UNSIGNED NOT NULL COMMENT '用户ID',
   `product_id` int(10) UNSIGNED NOT NULL COMMENT '商品ID',
   `product_amount` int(11) NOT NULL COMMENT '商品数量',
-  `product_type_id` int(10) NOT NULL COMMENT '商品型号id',
-  PRIMARY KEY (`cart_goods_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '购物车商品表' ROW_FORMAT = Dynamic;
+  `product_type_id` smallint(5) UNSIGNED NOT NULL COMMENT '商品型号ID',
+  PRIMARY KEY (`cart_goods_id`) USING BTREE,
+  INDEX `customer_idx`(`customer_id`) USING BTREE,
+  INDEX `product_id`(`product_id`) USING BTREE,
+  INDEX `cart_goods_ibfk_3`(`product_type_id`) USING BTREE,
+  CONSTRAINT `cart_goods_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer_login` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `cart_goods_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `product_info` (`product_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `cart_goods_ibfk_3` FOREIGN KEY (`product_type_id`) REFERENCES `product_type` (`product_type_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '购物车商品表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for customer_addr
@@ -40,8 +46,10 @@ CREATE TABLE `customer_addr`  (
   `zipcode` int(6) NOT NULL COMMENT '邮政编码',
   `address` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '具体的地址门牌号',
   `is_default` tinyint(4) NOT NULL COMMENT '是否为默认地址',
-  PRIMARY KEY (`customer_addr_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户地址表' ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`customer_addr_id`) USING BTREE,
+  INDEX `customer_id`(`customer_id`) USING BTREE,
+  CONSTRAINT `customer_addr_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer_login` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户地址表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of customer_addr
@@ -66,8 +74,10 @@ CREATE TABLE `customer_inf`  (
   `mobile_phone` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '手机号',
   `gender` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '性别',
   `user_point` int(11) NOT NULL DEFAULT 0 COMMENT '用户积分',
-  PRIMARY KEY (`customer_inf_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`customer_inf_id`) USING BTREE,
+  INDEX `customer_userpoint`(`customer_id`, `user_point`) USING BTREE,
+  CONSTRAINT `customer_inf_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer_login` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of customer_inf
@@ -85,41 +95,19 @@ CREATE TABLE `customer_login`  (
   `login_name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户登录名',
   `password` char(40) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'md5加密的密码',
   `role_id` int(11) NOT NULL COMMENT '角色id',
-  `user_stats` tinyint(4) NOT NULL DEFAULT 1 COMMENT '用户状态',
   PRIMARY KEY (`customer_id`) USING BTREE,
-  INDEX `login_name_password`(`login_name`, `password`) USING BTREE COMMENT '登录名与密码联合索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户登录表' ROW_FORMAT = Dynamic;
+  INDEX `login_name_password`(`login_name`, `password`) USING BTREE COMMENT '登录名与密码联合索引',
+  INDEX `role_id`(`role_id`) USING BTREE,
+  CONSTRAINT `customer_login_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户登录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of customer_login
 -- ----------------------------
-INSERT INTO `customer_login` VALUES (1, 'zack', '7c4a8d09ca3762af61e59520943dc26494f8941b', 1, 1);
-INSERT INTO `customer_login` VALUES (2, 'Jack', '7c4a8d09ca3762af61e59520943dc26494f8941b', 1, 1);
-INSERT INTO `customer_login` VALUES (3, 'Alice', '7c4a8d09ca3762af61e59520943dc26494f8941b', 1, 1);
-INSERT INTO `customer_login` VALUES (4, 'Tom', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2, 1);
-
--- ----------------------------
--- Table structure for customer_point_log
--- ----------------------------
-DROP TABLE IF EXISTS `customer_point_log`;
-CREATE TABLE `customer_point_log`  (
-  `point_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '积分日志ID',
-  `customer_id` int(10) UNSIGNED NOT NULL COMMENT '用户ID',
-  `source_id` tinyint(3) UNSIGNED NOT NULL COMMENT '积分来源编号：0订单，1签到，2活动',
-  `change_point` smallint(6) NOT NULL DEFAULT 0 COMMENT '变更积分数',
-  `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '积分日志生成时间',
-  PRIMARY KEY (`point_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户积分日志表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of customer_point_log
--- ----------------------------
-INSERT INTO `customer_point_log` VALUES (1, 1, 0, 10, '2021-08-01 20:42:28');
-INSERT INTO `customer_point_log` VALUES (2, 2, 1, -10, '2021-08-01 20:42:59');
-INSERT INTO `customer_point_log` VALUES (3, 3, 2, 20, '2021-08-01 20:43:17');
-INSERT INTO `customer_point_log` VALUES (4, 1, 2, -50, '2021-08-01 20:52:09');
-INSERT INTO `customer_point_log` VALUES (5, 3, 0, 20, '2021-08-01 20:52:30');
-INSERT INTO `customer_point_log` VALUES (6, 2, 2, 80, '2021-08-01 20:52:49');
+INSERT INTO `customer_login` VALUES (1, 'zack', '7c4a8d09ca3762af61e59520943dc26494f8941b', 1);
+INSERT INTO `customer_login` VALUES (2, 'Jack', '7c4a8d09ca3762af61e59520943dc26494f8941b', 1);
+INSERT INTO `customer_login` VALUES (3, 'Alice', '7c4a8d09ca3762af61e59520943dc26494f8941b', 1);
+INSERT INTO `customer_login` VALUES (4, 'Tom', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2);
 
 -- ----------------------------
 -- Table structure for order_detail
@@ -128,10 +116,13 @@ DROP TABLE IF EXISTS `order_detail`;
 CREATE TABLE `order_detail`  (
   `order_detail_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '订单详情表ID',
   `order_id` int(10) UNSIGNED NOT NULL COMMENT '订单表ID',
-  `product_id` int(10) UNSIGNED NOT NULL COMMENT '订单商品ID',
-  `product_cnt` int(11) NOT NULL DEFAULT 1 COMMENT '购买商品数量',
-  PRIMARY KEY (`order_detail_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单详情表' ROW_FORMAT = Dynamic;
+  `cart_goods_id` int(10) UNSIGNED NOT NULL COMMENT 'cart_goods主键',
+  PRIMARY KEY (`order_detail_id`) USING BTREE,
+  INDEX `order_product_id`(`order_id`, `cart_goods_id`) USING BTREE,
+  INDEX `cart_goods_id`(`cart_goods_id`) USING BTREE,
+  CONSTRAINT `order_detail_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `order_master` (`order_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `order_detail_ibfk_2` FOREIGN KEY (`cart_goods_id`) REFERENCES `cart_goods` (`cart_goods_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单详情表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for order_master
@@ -148,8 +139,13 @@ CREATE TABLE `order_master`  (
   `payment_money` decimal(8, 2) NOT NULL DEFAULT 0.00 COMMENT '支付金额',
   `pay_time` timestamp(0) NULL DEFAULT NULL COMMENT '支付时间',
   `order_status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '订单状态',
-  PRIMARY KEY (`order_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单主表' ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`order_id`) USING BTREE,
+  INDEX `order_customer_cusaddr_id`(`order_id`, `customer_id`, `customer_addr_id`) USING BTREE,
+  INDEX `customer_id`(`customer_id`) USING BTREE,
+  INDEX `customer_addr_id`(`customer_addr_id`) USING BTREE,
+  CONSTRAINT `order_master_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer_login` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `order_master_ibfk_2` FOREIGN KEY (`customer_addr_id`) REFERENCES `customer_addr` (`customer_addr_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单主表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for permission
@@ -160,7 +156,7 @@ CREATE TABLE `permission`  (
   `code` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '权限编码',
   `name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '操作名称',
   PRIMARY KEY (`permission_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of permission
@@ -178,9 +174,11 @@ DROP TABLE IF EXISTS `product_addition_info`;
 CREATE TABLE `product_addition_info`  (
   `product_addition_info_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `product_id` int(10) UNSIGNED NOT NULL COMMENT '商品ID',
-  `product_type_id` int(10) NOT NULL COMMENT '商品型号id',
-  PRIMARY KEY (`product_addition_info_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 43 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品附加信息表' ROW_FORMAT = Dynamic;
+  `product_type_id` int(10) NOT NULL COMMENT '商品型号ID',
+  PRIMARY KEY (`product_addition_info_id`) USING BTREE,
+  INDEX `product_type_id`(`product_id`, `product_type_id`) USING BTREE,
+  CONSTRAINT `product_addition_info_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `product_info` (`product_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 41 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品附加信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of product_addition_info
@@ -234,7 +232,7 @@ CREATE TABLE `product_category`  (
   `category_id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '分类ID',
   `category_name` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '分类名称',
   PRIMARY KEY (`category_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品分类表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品分类表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of product_category
@@ -268,18 +266,22 @@ CREATE TABLE `product_info`  (
   `inventory` int(10) NOT NULL COMMENT '商品库存',
   `pic_url` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '商品图片',
   `rest_time` timestamp(0) NULL DEFAULT NULL COMMENT '秒杀字段',
-  PRIMARY KEY (`product_id`) USING BTREE
+  PRIMARY KEY (`product_id`) USING BTREE,
+  INDEX `category_id`(`category_id`) USING BTREE,
+  INDEX `supplier_id`(`supplier_id`) USING BTREE,
+  CONSTRAINT `product_info_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `product_category` (`category_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `product_info_ibfk_2` FOREIGN KEY (`supplier_id`) REFERENCES `supplier_info` (`supplier_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of product_info
 -- ----------------------------
-INSERT INTO `product_info` VALUES (1, '麦芒', 1, 1, 5200.00, '全新系列国产手机', 100, 'http://img.alicdn.com/bao/uploaded/i1/1659916565/TB2EWe8aA1M.eBjSZFOXXc0rFXa_!!1659916565.jpg', NULL);
+INSERT INTO `product_info` VALUES (1, '麦芒5全网通', 1, 1, 7299.00, '国产手机', 20, 'http://img.alicdn.com/bao/uploaded/i1/1659916565/TB2EWe8aA1M.eBjSZFOXXc0rFXa_!!1659916565.jpg', NULL);
 INSERT INTO `product_info` VALUES (2, '华为honor/荣耀 V8 大屏4G智能拍照手机指纹解锁官方正品', 1, 1, 3399.00, '国产手机', 30, 'http://img.alicdn.com/bao/uploaded/i2/TB1QGBIKpXXXXXcaXXXHctQ8pXX_022619.jpg', NULL);
 INSERT INTO `product_info` VALUES (3, 'Apple/苹果 iPhone 7 Plus 128G 全网通4G智能手机', 1, 2, 6999.00, '非国产手机', 15, 'http://img.alicdn.com/bao/uploaded/i2/TB1bL9PNXXXXXcmaXXXeDqP9XXX_034934.jpg', NULL);
 INSERT INTO `product_info` VALUES (4, '预售Xiaomi/小米 红米手机4A 超长待机双卡双系统超薄智能机', 1, 3, 2999.00, '国产手机', 20, 'http://img.alicdn.com/bao/uploaded/i5/TB1KaeAOXXXXXcUapXXLpWA8VXX_032158.jpg', NULL);
 INSERT INTO `product_info` VALUES (5, 'Samsung/三星 Galaxy C9 Pro SM-C9000 6+64G全金属超薄手机', 1, 6, 3199.00, '非国产手机', 40, 'https://img.alicdn.com/imgextra/i4/370627083/TB2JmhxXc2DjeFjSspnXXb20XXa-370627083.jpg', NULL);
-INSERT INTO `product_info` VALUES (6, 'Huawei/华为 G9 青春版【双12领券立减100+178元礼包】智能手机', 1, 1, 1999.00, '国产手机', 25, 'http://img.alicdn.com/bao/uploaded/i2/2838892713/TB2u1yptVXXXXbZXXXXXXXXXXXX_!!2838892713.jpg', NULL);
+INSERT INTO `product_info` VALUES (6, 'Huawei/华为 G9 青春版智能手机', 1, 1, 1999.00, '国产手机', 25, 'http://img.alicdn.com/bao/uploaded/i2/2838892713/TB2u1yptVXXXXbZXXXXXXXXXXXX_!!2838892713.jpg', NULL);
 INSERT INTO `product_info` VALUES (7, '华为honor/荣耀 荣耀7i全网通智能手机 官方正品', 1, 1, 2299.00, '国产手机', 30, 'http://img.alicdn.com/bao/uploaded/i6/TB1OCF0KpXXXXacXXXXFoYl.pXX_073637.jpg', NULL);
 INSERT INTO `product_info` VALUES (8, '华为honor/荣耀 畅玩5x 4G智能手机官方大屏正品', 1, 1, 2599.00, '国产手机', 20, 'http://img.alicdn.com/bao/uploaded/i4/TB1hD7NHVXXXXavXVXXZKVp9XXX_034218.jpg', NULL);
 INSERT INTO `product_info` VALUES (9, '【旗舰新品】OPPO R9s Plus全网通指纹识别6G大运存拍照4G手机r9s', 1, 4, 3599.00, '国产手机', 25, 'http://img.alicdn.com/bao/uploaded/i8/TB16HgDOpXXXXcCXpXXvx6S.pXX_104208.jpg', NULL);
@@ -290,7 +292,7 @@ INSERT INTO `product_info` VALUES (13, '【秒杀3000】华为honor/荣耀 V8 �
 INSERT INTO `product_info` VALUES (14, '【秒杀6500】Apple/苹果 iPhone 7 Plus 128G 全网通4G智能手机', 1, 2, 6500.00, '非国产手机', 40, 'http://img.alicdn.com/bao/uploaded/i2/TB1bL9PNXXXXXcmaXXXeDqP9XXX_034934.jpg', '2021-08-11 10:59:35');
 INSERT INTO `product_info` VALUES (15, '【秒杀2500】预售Xiaomi/小米 红米手机4A 超长待机双卡双系统超薄智能机', 1, 3, 2500.00, '国产手机', 50, 'http://img.alicdn.com/bao/uploaded/i5/TB1KaeAOXXXXXcUapXXLpWA8VXX_032158.jpg', '2021-08-11 12:01:03');
 INSERT INTO `product_info` VALUES (16, '【秒杀3000】Samsung/三星 Galaxy C9 Pro SM-C9000 6+64G全金属超薄手机', 1, 6, 3000.00, '国产手机', 30, 'https://img.alicdn.com/imgextra/i4/370627083/TB2JmhxXc2DjeFjSspnXXb20XXa-370627083.jpg', '2021-08-10 18:02:05');
-INSERT INTO `product_info` VALUES (17, '【秒杀1800】Huawei/华为 G9 青春版【双12领券立减100+178元礼包】智能手机', 1, 1, 1800.00, '国产手机', 60, 'http://img.alicdn.com/bao/uploaded/i2/2838892713/TB2u1yptVXXXXbZXXXXXXXXXXXX_!!2838892713.jpg', '2021-08-11 17:03:09');
+INSERT INTO `product_info` VALUES (17, '【秒杀1800】Huawei/华为 G9 青春版智能手机', 1, 1, 1800.00, '国产手机', 60, 'http://img.alicdn.com/bao/uploaded/i2/2838892713/TB2u1yptVXXXXbZXXXXXXXXXXXX_!!2838892713.jpg', '2021-08-11 17:03:09');
 INSERT INTO `product_info` VALUES (18, '湖北电信合约机 OPPO R9全网通正面指纹识别新款智能拍照4G手机', 1, 4, 1999.00, '国产手机', 40, 'http://img.alicdn.com/bao/uploaded/i6/TB1KOzwKpXXXXaYXVXXCbB.8FXX_025720.jpg', NULL);
 INSERT INTO `product_info` VALUES (19, '正品Xiaomi/小米 红米手机3X 4g双卡双待智能手机 小米官方旗舰店', 1, 3, 2999.00, '国产手机', 20, 'https://img14.360buyimg.com/n1/s546x546_jfs/t1/190256/21/11986/351134/60e432bfE63e14615/3d0d9b82937e5751.jpg', NULL);
 INSERT INTO `product_info` VALUES (20, 'OPPO Find X3 5000万双主摄IMX766 10亿色臻彩屏 60倍显微镜 骁龙870 8+128镜黑 5G年度旗舰手机 ', 1, 4, 3999.00, '国产手机', 50, 'https://img14.360buyimg.com/n0/jfs/t1/159876/20/15398/91091/605d8789Eb22ccd0d/3bfd6f8a27ca24d8.jpg', NULL);
@@ -328,12 +330,14 @@ INSERT INTO `product_type` VALUES (13, '合约机');
 DROP TABLE IF EXISTS `punch_in`;
 CREATE TABLE `punch_in`  (
   `punch_in_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT ' 自增主键',
-  `customer_id` int(11) NOT NULL COMMENT '用户ID',
+  `customer_id` int(10) UNSIGNED NOT NULL COMMENT '用户ID',
   `year` smallint(4) NOT NULL COMMENT '年份',
   `month` tinyint(2) NOT NULL COMMENT '月份',
   `daily_bitmap` int(255) NOT NULL COMMENT '签到图',
-  PRIMARY KEY (`punch_in_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`punch_in_id`) USING BTREE,
+  INDEX `customer_id`(`customer_id`) USING BTREE,
+  CONSTRAINT `punch_in_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer_login` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for role
@@ -343,7 +347,7 @@ CREATE TABLE `role`  (
   `role_id` int(11) NOT NULL AUTO_INCREMENT,
   `role_name` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '角色名',
   PRIMARY KEY (`role_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of role
@@ -357,19 +361,23 @@ INSERT INTO `role` VALUES (2, 'admin');
 DROP TABLE IF EXISTS `role_permission`;
 CREATE TABLE `role_permission`  (
   `role_permission_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `permission_id` int(11) NOT NULL COMMENT '权限ID',
+  `permission_id` int(11) UNSIGNED NOT NULL COMMENT '权限ID',
   `role_id` int(11) NOT NULL COMMENT '角色ID',
-  PRIMARY KEY (`role_permission_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`role_permission_id`) USING BTREE,
+  INDEX `role_id`(`role_id`) USING BTREE,
+  INDEX `permission_id`(`permission_id`) USING BTREE,
+  CONSTRAINT `role_permission_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `role_permission_ibfk_2` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of role_permission
 -- ----------------------------
-INSERT INTO `role_permission` VALUES (1, 2, 1);
-INSERT INTO `role_permission` VALUES (2, 1, 2);
-INSERT INTO `role_permission` VALUES (3, 1, 3);
-INSERT INTO `role_permission` VALUES (4, 1, 4);
-INSERT INTO `role_permission` VALUES (5, 1, 5);
+INSERT INTO `role_permission` VALUES (1, 1, 2);
+INSERT INTO `role_permission` VALUES (2, 2, 1);
+INSERT INTO `role_permission` VALUES (3, 3, 1);
+INSERT INTO `role_permission` VALUES (4, 4, 1);
+INSERT INTO `role_permission` VALUES (5, 5, 1);
 
 -- ----------------------------
 -- Table structure for supplier_info
@@ -379,7 +387,8 @@ CREATE TABLE `supplier_info`  (
   `supplier_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '供应商ID',
   `supplier_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '供应商名称',
   `address` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '供应商地址',
-  PRIMARY KEY (`supplier_id`) USING BTREE
+  PRIMARY KEY (`supplier_id`) USING BTREE,
+  INDEX `supplier_id_name`(`supplier_id`, `supplier_name`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '供应商信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -396,7 +405,7 @@ INSERT INTO `supplier_info` VALUES (6, '三星', '首尔');
 -- View structure for product_detail_view
 -- ----------------------------
 DROP VIEW IF EXISTS `product_detail_view`;
-CREATE ALGORITHM = UNDEFINED DEFINER = `root`@`localhost` SQL SECURITY DEFINER VIEW `product_detail_view` AS select row_number() OVER (ORDER BY `product_info`.`product_id`)  AS `id`,`product_category`.`category_name` AS `category_name`,`product_info`.`product_id` AS `product_id`,`product_info`.`product_name` AS `product_name`,`product_info`.`pic_url` AS `pic_url`,`product_info`.`price` AS `price`,`product_info`.`inventory` AS `inventory`,`product_info`.`description` AS `description`,`product_type`.`product_type_name` AS `product_type_name`,`supplier_info`.`supplier_name` AS `supplier_name`,`supplier_info`.`address` AS `supplier_address` from ((((`product_info` join `supplier_info`) join `product_type`) join `product_addition_info`) join `product_category`) where ((`product_info`.`product_id` = `product_addition_info`.`product_id`) and (`product_info`.`supplier_id` = `supplier_info`.`supplier_id`) and (`product_type`.`product_type_id` = `product_addition_info`.`product_type_id`) and (`product_info`.`category_id` = `product_category`.`category_id`) and (`product_type`.`product_type_id` = `product_addition_info`.`product_type_id`));
+CREATE ALGORITHM = UNDEFINED DEFINER = `root`@`localhost` SQL SECURITY DEFINER VIEW `product_detail_view` AS select row_number() OVER (ORDER BY `product_info`.`product_id` )  AS `id`,`product_category`.`category_name` AS `category_name`,`product_info`.`product_id` AS `product_id`,`product_info`.`product_name` AS `product_name`,`product_info`.`pic_url` AS `pic_url`,`product_info`.`price` AS `price`,`product_info`.`inventory` AS `inventory`,`product_info`.`description` AS `description`,`product_type`.`product_type_name` AS `product_type_name`,`supplier_info`.`supplier_name` AS `supplier_name`,`supplier_info`.`address` AS `supplier_address`,`product_info`.`rest_time` AS `rest_time` from ((((`product_info` join `supplier_info`) join `product_type`) join `product_addition_info`) join `product_category`) where ((`product_info`.`product_id` = `product_addition_info`.`product_id`) and (`product_info`.`supplier_id` = `supplier_info`.`supplier_id`) and (`product_type`.`product_type_id` = `product_addition_info`.`product_type_id`) and (`product_info`.`category_id` = `product_category`.`category_id`) and (`product_type`.`product_type_id` = `product_addition_info`.`product_type_id`));
 
 -- ----------------------------
 -- View structure for product_view

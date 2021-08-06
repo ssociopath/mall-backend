@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,12 +31,13 @@ public class PdtDetailVO {
     private String supplierName;
     private List<String> productTypeNameList;
     private String supplierAddress;
+    private Timestamp restTime;
 
     public static PdtDetailVO fromPdtDetailInfList(List<PdtDetailInf> pdtDetailInfList) {
         PdtDetailInf firstPdtDetailInf=pdtDetailInfList.get(0);
         return PdtDetailVO.builder()
                 .productTypeNameList(pdtDetailInfList.stream()
-                        .map(pdtDetailInf -> pdtDetailInf.getProductTypeName())
+                        .map(PdtDetailInf::getProductTypeName)
                         .collect(Collectors.toList()))
                 .productId(firstPdtDetailInf.getProductId())
                 .productName(firstPdtDetailInf.getProductName())
@@ -45,6 +47,7 @@ public class PdtDetailVO {
                 .description(firstPdtDetailInf.getDescription())
                 .supplierName(firstPdtDetailInf.getSupplierName())
                 .supplierAddress(firstPdtDetailInf.getSupplierAddress())
+                .restTime(firstPdtDetailInf.getRestTime())
                 .build();
     }
 }

@@ -27,5 +27,4 @@ public class CsmLogin {
     private String loginName;
     private String password;
     private Integer roleId;
-    private Integer userStats;
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -40,10 +41,6 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
          RedisUtil.setObject("good" + goodId, 20);
          goodSecMap.put(goodId,true);
      }
-
-    public boolean generateOrderMaster(OrderMaster orderMaster){
-       return null!=this.insert(orderMaster);
-    }
 
     @Transactional
      public boolean secKill(int goodId) {

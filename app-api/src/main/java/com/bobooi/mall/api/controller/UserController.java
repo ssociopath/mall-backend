@@ -1,6 +1,8 @@
 package com.bobooi.mall.api.controller;
 
+import com.bobooi.mall.api.module.vo.UserDetailVO;
 import com.bobooi.mall.api.module.vo.UserVO;
+import com.bobooi.mall.data.entity.CsmAddr;
 import com.bobooi.mall.data.entity.CsmLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,15 +41,26 @@ public class UserController {
     UserService userService;
 
     /**
+     * 管理员获取地址用户列表
+     * @return 用户地址列表
+     */
+    @ApiOperation("管理员获取用户地址列表")
+    @GetMapping("/addr")
+    @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
+    public ApplicationResponse<List<CsmAddr>> getUserAddr() {
+        return ApplicationResponse.succeed(userService.getUserAddrList());
+    }
+
+    /**
      * 管理员获取用户列表
      * @return 用户列表
      */
-    @ApiOperation("管理员获取用户列表")
+    @ApiOperation("管理员获取用户详细信息列表")
     @GetMapping
     @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
-    public ApplicationResponse<List<UserVO>> getAll() {
-        return ApplicationResponse.succeed(userService.findAll().stream()
-                .map(UserVO::fromUser)
+    public ApplicationResponse<List<UserDetailVO>> getAll() {
+        return ApplicationResponse.succeed(userService.getDetailUserList().stream()
+                .map(UserDetailVO::fromUserDetailBO)
                 .collect(Collectors.toList()));
     }
 
@@ -68,29 +81,29 @@ public class UserController {
         return ApplicationResponse.succeed("您已经登录了", UserVO.fromUser(csmLogin));
     }
 
-    /**
-     * 用户注册
-     * @return 注册后信息
-     */
-    @PostMapping("/register")
-    public ApplicationResponse<UserVO> register(@Validated(UserEditValidGroup.class) CsmLogin csmLogin) {
-        return add(csmLogin);
-    }
+//    /**
+//     * 用户注册
+//     * @return 注册后信息
+//     */
+//    @PostMapping("/register")
+//    public ApplicationResponse<UserVO> register(@Validated(UserEditValidGroup.class) CsmLogin csmLogin) {
+//        return add(csmLogin);
+//    }
 
-    /**
-     * 管理员新增用户
-     * @return 新增后信息
-     */
-    @PostMapping
-    @RequiresPermissions(logical = Logical.AND, value = {"user:add"})
-    public ApplicationResponse<UserVO> add(@Validated(UserEditValidGroup.class) CsmLogin csmLogin) {
-        try {
-            csmLogin = userService.addUser(csmLogin);
-        } catch (Exception exception) {
-            throw new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG, exception.getMessage());
-        }
-        return ApplicationResponse.succeed(UserVO.fromUser(csmLogin));
-    }
+//    /**
+//     * 管理员新增用户
+//     * @return 新增后信息
+//     */
+//    @PostMapping
+//    @RequiresPermissions(logical = Logical.AND, value = {"user:add"})
+//    public ApplicationResponse<UserVO> add(@Validated(UserEditValidGroup.class) CsmLogin csmLogin) {
+//        try {
+//            csmLogin = userService.addUser(csmLogin);
+//        } catch (Exception exception) {
+//            throw new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG, exception.getMessage());
+//        }
+//        return ApplicationResponse.succeed(UserVO.fromUser(csmLogin));
+//    }
 
     /**
      * 用户登录
