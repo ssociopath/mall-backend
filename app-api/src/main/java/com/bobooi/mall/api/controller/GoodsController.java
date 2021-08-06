@@ -2,6 +2,7 @@ package com.bobooi.mall.api.controller;
 
 import com.bobooi.mall.api.module.vo.GoodsVO;
 import com.bobooi.mall.api.module.vo.PdtDetailVO;
+import com.bobooi.mall.api.module.vo.SecGoodsVO;
 import com.bobooi.mall.common.exception.ApplicationException;
 import com.bobooi.mall.common.exception.AssertUtils;
 import com.bobooi.mall.common.response.ApplicationResponse;
@@ -59,38 +60,52 @@ public class GoodsController {
     /**
      * 根据商品分类id获取所有商品数据（未分页）
      *
-     * @return
+     * @return 该分类下所有商品展示数据【不含秒杀商品】
      */
-    @ApiOperation("根据商品分类id获取所有商品展示数据")
+    @ApiOperation("根据商品分类id获取所有商品展示数据【不含秒杀商品】")
     @GetMapping("/allProductInfo/{categoryId}")
     public ApplicationResponse<List<GoodsVO>> getAllProductInfoByCategoryId(@PathVariable Integer categoryId) {
-        return ApplicationResponse.succeed(goodsService.getAllPdtInfByCategoryId(categoryId)
-                .stream()
-                .map(pdtInfo ->
-                        GoodsVO.fromPdtInfAndSupplierInf(pdtInfo,
-                                supplierInfoRepository.findBySupplierId(pdtInfo.getSupplierId()))
-                ).collect(Collectors.toList())
+        return ApplicationResponse.succeed(
+                goodsService.getAllPdtInfByCategoryId(categoryId)
+                        .stream()
+                        .filter(pdfInfo->pdfInfo.getRestTime()==null)
+                        .map(pdtInfo -> GoodsVO.fromPdtInfAndSupplierInf(pdtInfo, supplierInfoRepository.findBySupplierId(pdtInfo.getSupplierId()))
+                        ).collect(Collectors.toList())
+        );
+    }
+
+    /**
+     * "获取所有秒杀商品展示数据
+     *
+     * @return 所有秒杀商品展示数据
+     */
+    @ApiOperation("获取所有秒杀商品展示数据")
+    @GetMapping("/allSecProductInfo")
+    public ApplicationResponse<List<GoodsVO>> getAllSecProductInfo() {
+        return ApplicationResponse.succeed(
+                goodsService.findAll()
+                        .stream()
+                        .filter(pdfInfo->pdfInfo.getRestTime()!=null)
+                        .map(pdtInfo -> GoodsVO.fromPdtInfAndSupplierInf(pdtInfo, supplierInfoRepository.findBySupplierId(pdtInfo.getSupplierId())))
+                        .collect(Collectors.toList())
         );
     }
 
     /**
      * 根据商品id获取商品详细数据
      *
-     * @return
+     * @return 商品详细数据
      */
     @ApiOperation("根据商品id获取商品详细数据")
     @GetMapping("/productDetailInfo/{productId}")
     public ApplicationResponse<PdtDetailVO> getPdtDetailInfoByProductId(@PathVariable Integer productId) {
-        return ApplicationResponse.succeed(
-                PdtDetailVO.fromPdtDetailInfList(
-                        goodsService.getPdtDetailInfoByPdtId(productId)
-                ));
+        return ApplicationResponse.succeed(PdtDetailVO.fromPdtDetailInfList(goodsService.getPdtDetailInfoByPdtId(productId)));
     }
 
     /**
      * 获取所有商品详细数据
      *
-     * @return
+     * @return 所有商品详细数据
      */
     @ApiOperation("获取所有商品详细数据")
     @GetMapping("/allProductDetailInfo")

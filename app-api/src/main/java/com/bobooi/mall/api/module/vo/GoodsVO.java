@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 /**
  * 类描述
  *
@@ -23,6 +25,7 @@ public class GoodsVO {
     private String picUrl;
     private Float price;
     private String supplierName;
+    private Timestamp restTime;
 
     public static GoodsVO fromPdtInfAndSupplierInf(PdtInf pdtInf, SupplierInf supplierInfo){
         return GoodsVO.builder()
@@ -31,6 +34,7 @@ public class GoodsVO {
                 .picUrl(pdtInf.getPicUrl())
                 .price(pdtInf.getPrice())
                 .supplierName(supplierInfo.getSupplierName())
+                .restTime(pdtInf.getRestTime())
                 .build();
     }
 }

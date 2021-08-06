@@ -13,13 +13,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface GoodRepository  extends DataRepository<Good, Integer> {
 
-    @Modifying
-    @Query(value = "update good set stock=stock-1 where good_id=:id and stock>0",nativeQuery=true)
-    int deductStock(@Param("id") Integer id);
-
-    @Query(value = "select stock from good WHERE good_id=:id for update",nativeQuery=true)
-    int getStockByGoodId(@Param("id") Integer id);
-
 
     @Modifying
     @Query(value = "delete from good WHERE good_id=:id",nativeQuery=true)

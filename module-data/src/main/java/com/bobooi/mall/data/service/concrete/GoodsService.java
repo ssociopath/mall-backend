@@ -53,6 +53,7 @@ public class GoodsService extends BaseDataService<PdtInf, Integer> {
      * @return
      */
     public List<PdtInf> getAllPdtInfByCategoryId(Integer categoryId) {
+
         return pdtInfoRepository.findAllByCategoryId(categoryId);
     }
 
@@ -63,7 +64,9 @@ public class GoodsService extends BaseDataService<PdtInf, Integer> {
      * @return
      */
     public List<PdtDetailInf> getPdtDetailInfoByPdtId(Integer productId) {
-        return pdtDetailViewRepository.findByProductId(productId);
+        List<PdtDetailInf> pdtDetailInfList = pdtDetailViewRepository.findByProductId(productId);
+        AssertUtils.notNull(pdtDetailInfList,new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG,"该商品不存在或已经下架！"));
+        return pdtDetailInfList;
     }
 
     /**
