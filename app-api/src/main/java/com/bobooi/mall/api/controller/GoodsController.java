@@ -47,6 +47,44 @@ public class GoodsController {
     }
 
     /**
+     * 增加商品分类
+     *
+     * @return 商品分类实体
+     */
+    @ApiOperation("增加商品分类")
+    @GetMapping("/category/add")
+    public ApplicationResponse<PdtCategory> addProductCategory(@RequestParam String categoryName) {
+        return ApplicationResponse.succeed("新增商品分类成功", goodsService.addProductCategory(categoryName));
+    }
+
+    /**
+     * 删除商品分类信息(暂未写级联的逻辑)
+     *
+     * @return
+     */
+    @ApiOperation("删除商品分类信息")
+    @DeleteMapping("/category/{categoryId}")
+    public ApplicationResponse deleteProductCategory(@PathVariable Integer categoryId) {
+        AssertUtils.notNull(categoryId, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
+        goodsService.deleteProductCategory(categoryId);
+        return ApplicationResponse.succeed("商品分类删除成功");
+    }
+
+    /**
+     * 修改商品分类信息
+     *
+     * @return 商品分类实体
+     */
+    @ApiOperation("修改商品分类信息")
+    @PostMapping("/category/update")
+    public ApplicationResponse<PdtCategory> deleteProductCategory(PdtCategory pdtCategory) {
+        AssertUtils.notNull(pdtCategory, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
+        AssertUtils.notNull(pdtCategory.getCategoryId(), new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
+        AssertUtils.notNull(pdtCategory.getCategoryName(), new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
+        return ApplicationResponse.succeed("商品分类修改成功", goodsService.updateProductCategory(pdtCategory));
+    }
+
+    /**
      * 获取所有供应商列表
      *
      * @return 供应商列表
@@ -68,7 +106,7 @@ public class GoodsController {
         return ApplicationResponse.succeed(
                 goodsService.getAllPdtInfByCategoryId(categoryId)
                         .stream()
-                        .filter(pdfInfo->pdfInfo.getRestTime()==null)
+                        .filter(pdfInfo -> pdfInfo.getRestTime() == null)
                         .map(pdtInfo -> GoodsVO.fromPdtInfAndSupplierInf(pdtInfo, supplierInfoRepository.findBySupplierId(pdtInfo.getSupplierId()))
                         ).collect(Collectors.toList())
         );
@@ -85,7 +123,7 @@ public class GoodsController {
         return ApplicationResponse.succeed(
                 goodsService.findAll()
                         .stream()
-                        .filter(pdfInfo->pdfInfo.getRestTime()!=null)
+                        .filter(pdfInfo -> pdfInfo.getRestTime() != null)
                         .map(pdtInfo -> GoodsVO.fromPdtInfAndSupplierInf(pdtInfo, supplierInfoRepository.findBySupplierId(pdtInfo.getSupplierId())))
                         .collect(Collectors.toList())
         );
@@ -143,8 +181,8 @@ public class GoodsController {
         AssertUtils.notNull(picUrl, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
         AssertUtils.notNull(price, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
         AssertUtils.notNull(inventory, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
-        return goodsService.updateProductInfo(productId, productName, description, picUrl,price,inventory)
-                ?ApplicationResponse.succeed("修改商品信息成功")
-                :ApplicationResponse.fail(SystemCodeEnum.FAILURE,"修改商品信息失败");
+        return goodsService.updateProductInfo(productId, productName, description, picUrl, price, inventory)
+                ? ApplicationResponse.succeed("修改商品信息成功")
+                : ApplicationResponse.fail(SystemCodeEnum.FAILURE, "修改商品信息失败");
     }
 }

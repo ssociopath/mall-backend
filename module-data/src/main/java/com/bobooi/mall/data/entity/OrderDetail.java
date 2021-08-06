@@ -22,6 +22,5 @@ public class OrderDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer orderDetailId;
     private Integer orderId;
-    private Integer productId;
-    private Integer productCnt;
+    private Integer cartGoodsId;
 }

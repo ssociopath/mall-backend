@@ -47,6 +47,34 @@ public class GoodsService extends BaseDataService<PdtInf, Integer> {
     }
 
     /**
+     * 添加商品分类信息
+     */
+    public PdtCategory addProductCategory(String categoryName) {
+        PdtCategory pdtCategory=pdtCategoryRepository.findByCategoryName(categoryName);
+        AssertUtils.isNull(pdtCategory,new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG,"该商品分类已存在"));
+        return pdtCategoryRepository.save(new PdtCategory(null,categoryName));
+    }
+
+    /**
+     * 删除商品分类信息
+     */
+    public void deleteProductCategory(Integer categoryId) {
+        AssertUtils.notNull(pdtCategoryRepository.findByCategoryId(categoryId),
+                new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG,"该商品分类不存在"));
+        pdtCategoryRepository.deleteById(categoryId);
+    }
+
+    /**
+     * 修改商品分类信息
+     */
+    public PdtCategory updateProductCategory(PdtCategory pdtCategory) {
+        PdtCategory pdtCategoryInDB=pdtCategoryRepository.findByCategoryId(pdtCategory.getCategoryId());
+        AssertUtils.notNull(pdtCategoryInDB, new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG,"该商品分类不存在"));
+        pdtCategoryInDB.setCategoryName(pdtCategory.getCategoryName());
+        return pdtCategoryRepository.save(pdtCategoryInDB);
+    }
+
+    /**
      * 获取商品分类id为categoryId的所有商品信息
      *
      * @param categoryId 商品分类id
@@ -112,7 +140,6 @@ public class GoodsService extends BaseDataService<PdtInf, Integer> {
      */
     public boolean updateProductInfo(Integer productId, String productName, String description, String picUrl, Float price, Integer inventory){
         PdtInf pdtInf=pdtInfoRepository.getById(productId);
-        System.out.println(pdtInf.getProductId());
         AssertUtils.notNull(pdtInf,new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG,"对应商品不存在！"));
         pdtInf.setProductName(productName);
         pdtInf.setDescription(description);
