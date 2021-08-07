@@ -65,4 +65,26 @@ public class CartController {
         AssertUtils.notNull(productTypeId, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
         return ApplicationResponse.succeed("添加至购物车成功",cartGoodsService.addCartGoods(customerId, productId, productAmount, productTypeId));
     }
+
+    /**
+     * 从购物车中移除商品
+     * @return 返回处理信息
+     */
+    @ApiOperation("根据购物车商品id将商品从用户购物车中移除")
+    @PostMapping("/deleteById")
+    public ApplicationResponse<Void> deleteCartGoods(Integer cartGoodsId) {
+        cartGoodsService.deleteByCartGoodsId(cartGoodsId);
+        return ApplicationResponse.succeed("删除成功");
+    }
+
+    /**
+     * 清空购物车
+     * @return 返回处理信息
+     */
+    @ApiOperation("清空当前用户的购物车")
+    @PostMapping("/clear")
+    public ApplicationResponse<Void> deleteCartGoods() {
+        cartGoodsService.clear(userService.info().getCustomerId());
+        return ApplicationResponse.succeed("清空成功");
+    }
 }

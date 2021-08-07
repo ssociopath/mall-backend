@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartGoodsVO {
-    private Integer productId;
+    private Integer cartGoodsId;
     private String picUrl;
     private String productName;
     private String productTypeName;
@@ -25,7 +25,7 @@ public class CartGoodsVO {
 
     public static CartGoodsVO fromCartGoodsBO(CartGoodsBO cartGoodsBO){
         return CartGoodsVO.builder()
-                .productId(cartGoodsBO.getCartGoods().getProductId())
+                .cartGoodsId(cartGoodsBO.getCartGoods().getCartGoodsId())
                 .picUrl(cartGoodsBO.getPdtInf().getPicUrl())
                 .productName(cartGoodsBO.getPdtInf().getProductName())
                 .productTypeName(cartGoodsBO.getPdtType().getProductTypeName())

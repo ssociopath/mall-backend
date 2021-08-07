@@ -1,6 +1,7 @@
 package com.bobooi.mall.data.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import java.sql.Timestamp;
  * @date 2021/8/4
  */
 @Data
+@Builder
 @Entity
 @Table(name="order_master")
 @NoArgsConstructor
@@ -22,13 +24,15 @@ public class OrderMaster {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer orderId;
-    private Integer orderSn;
+    private Long orderSn;
     private Integer customerId;
-    private String shippingUser;
-    private Integer customerAddrId;
-    private Float orderMoney;
-    private Float districtMoney;
-    private Float paymentMoney;
+    private String orderAddr;
+    private String picUrl;
+    private String productName;
+    private String productTypeName;
+    private Integer productCnt;
+    private Double orderMoney;
+    private Double districtMoney;
+    private Double payMoney;
     private Timestamp payTime;
-    private Integer orderStatus;
 }

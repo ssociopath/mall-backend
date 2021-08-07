@@ -130,7 +130,7 @@ public class UserController {
      * @return 剔除结果
      */
     @ApiOperation("注销")
-    @DeleteMapping("/logout")
+    @PostMapping("/logout")
     public ApplicationResponse<String> deleteOnline() {
         CsmLogin csmLogin = userService.info();
         if(csmLogin ==null){

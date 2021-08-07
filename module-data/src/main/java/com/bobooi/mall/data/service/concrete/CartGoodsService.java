@@ -36,7 +36,14 @@ public class CartGoodsService extends BaseDataService<CartGoods, Integer> {
         PdtAddiInf pdtAddiInf = pdtAddiInfoRepository.findByProductIdAndProductTypeId(productId,productTypeId);
         AssertUtils.notNull(pdtAddiInf,new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG,"对应商品不存在！"));
         AssertUtils.isFalse(pdtInf.getInventory()<productAmount,new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG,"超出库存数量！"));
-        return this.insert(new CartGoods(null,customerId,productId,productAmount,productTypeId));
+        CartGoods cartGoods = cartGoodsRepository.findByCustomerIdAndProductIdAndProductTypeId(customerId,productId,productTypeId);
+        if(cartGoods==null){
+            cartGoods = this.insert(new CartGoods(null,customerId,productId,productAmount,productTypeId));
+        }else{
+            cartGoods.setProductAmount(cartGoods.getProductAmount()+productAmount);
+            cartGoods = this.save(cartGoods);
+        }
+        return cartGoods;
     }
 
     public List<CartGoodsBO> getCartGoodsList(Integer customerId){
@@ -45,5 +52,13 @@ public class CartGoodsService extends BaseDataService<CartGoods, Integer> {
             PdtType pdtType = pdtTypeRepository.getById(cartGoods.getProductTypeId());
             return new CartGoodsBO(cartGoods,pdtInf,pdtType);
         }).collect(Collectors.toList());
+    }
+
+    public void deleteByCartGoodsId(Integer cartGoodsId){
+        cartGoodsRepository.deleteByCartGoodsId(cartGoodsId);
+    }
+
+    public void clear(Integer customerId){
+        cartGoodsRepository.deleteAllByCustomerId(customerId);
     }
 }

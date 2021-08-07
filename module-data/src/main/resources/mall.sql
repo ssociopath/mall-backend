@@ -11,7 +11,7 @@
  Target Server Version : 80018
  File Encoding         : 65001
 
- Date: 06/08/2021 22:39:12
+ Date: 07/08/2021 14:28:16
 */
 
 SET NAMES utf8mb4;
@@ -45,7 +45,7 @@ CREATE TABLE `customer_addr`  (
   `customer_id` int(10) UNSIGNED NOT NULL COMMENT 'customer_login表的自增ID',
   `zipcode` int(6) NOT NULL COMMENT '邮政编码',
   `address` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '具体的地址门牌号',
-  `is_default` tinyint(4) NOT NULL COMMENT '是否为默认地址',
+  `is_default` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否为默认地址',
   PRIMARY KEY (`customer_addr_id`) USING BTREE,
   INDEX `customer_id`(`customer_id`) USING BTREE,
   CONSTRAINT `customer_addr_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer_login` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -110,21 +110,6 @@ INSERT INTO `customer_login` VALUES (3, 'Alice', '7c4a8d09ca3762af61e59520943dc2
 INSERT INTO `customer_login` VALUES (4, 'Tom', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2);
 
 -- ----------------------------
--- Table structure for order_detail
--- ----------------------------
-DROP TABLE IF EXISTS `order_detail`;
-CREATE TABLE `order_detail`  (
-  `order_detail_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '订单详情表ID',
-  `order_id` int(10) UNSIGNED NOT NULL COMMENT '订单表ID',
-  `cart_goods_id` int(10) UNSIGNED NOT NULL COMMENT 'cart_goods主键',
-  PRIMARY KEY (`order_detail_id`) USING BTREE,
-  INDEX `order_product_id`(`order_id`, `cart_goods_id`) USING BTREE,
-  INDEX `cart_goods_id`(`cart_goods_id`) USING BTREE,
-  CONSTRAINT `order_detail_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `order_master` (`order_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `order_detail_ibfk_2` FOREIGN KEY (`cart_goods_id`) REFERENCES `cart_goods` (`cart_goods_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单详情表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
 -- Table structure for order_master
 -- ----------------------------
 DROP TABLE IF EXISTS `order_master`;
@@ -132,19 +117,19 @@ CREATE TABLE `order_master`  (
   `order_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '订单ID',
   `order_sn` bigint(20) UNSIGNED NOT NULL COMMENT '订单编号 yyyymmddnnnnnnnn',
   `customer_id` int(10) UNSIGNED NOT NULL COMMENT '下单人ID',
-  `shipping_user` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '收货人姓名',
-  `customer_addr_id` int(10) UNSIGNED NOT NULL COMMENT '收获地址id',
+  `order_addr` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '订单信息',
+  `pic_url` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '订单图片信息',
+  `product_name` varchar(120) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '商品名称',
+  `product_type_name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '商品类型名',
+  `product_cnt` int(10) NOT NULL COMMENT '商品数量',
   `order_money` decimal(8, 2) NOT NULL COMMENT '订单金额',
-  `district_money` decimal(8, 2) NOT NULL DEFAULT 0.00 COMMENT '优惠金额',
-  `payment_money` decimal(8, 2) NOT NULL DEFAULT 0.00 COMMENT '支付金额',
-  `pay_time` timestamp(0) NULL DEFAULT NULL COMMENT '支付时间',
-  `order_status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '订单状态',
+  `district_money` decimal(8, 2) NOT NULL COMMENT '优惠金额',
+  `pay_money` decimal(8, 2) NOT NULL COMMENT '支付金额',
+  `pay_time` timestamp(0) NOT NULL COMMENT '支付时间',
   PRIMARY KEY (`order_id`) USING BTREE,
-  INDEX `order_customer_cusaddr_id`(`order_id`, `customer_id`, `customer_addr_id`) USING BTREE,
+  INDEX `order_customer_cusaddr_id`(`order_id`, `customer_id`) USING BTREE,
   INDEX `customer_id`(`customer_id`) USING BTREE,
-  INDEX `customer_addr_id`(`customer_addr_id`) USING BTREE,
-  CONSTRAINT `order_master_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer_login` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `order_master_ibfk_2` FOREIGN KEY (`customer_addr_id`) REFERENCES `customer_addr` (`customer_addr_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `order_master_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer_login` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单主表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------

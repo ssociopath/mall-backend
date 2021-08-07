@@ -12,4 +12,8 @@ import java.util.List;
 
 public interface CartGoodsRepository extends DataRepository<CartGoods, Integer> {
     List<CartGoods> findAllByCustomerId(Integer customerId);
+
+    void deleteByCartGoodsId(Integer cartGoodsId);
+    void deleteAllByCustomerId(Integer customerId);
+    CartGoods findByCustomerIdAndProductIdAndProductTypeId(Integer customerId, Integer productId, Integer productTypeId);
 }
