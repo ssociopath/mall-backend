@@ -19,6 +19,8 @@ public interface CsmAddrRepository extends DataRepository<CsmAddr, Integer> {
      */
     List<CsmAddr>  findAllByCustomerId(Integer customerId);
 
+    CsmAddr  findByCustomerAddrId(Integer customerAddrId);
+
     /**
      * 找出用户默认地址
      *

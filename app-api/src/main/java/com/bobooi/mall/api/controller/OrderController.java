@@ -7,6 +7,7 @@ import com.bobooi.mall.common.response.SystemCodeEnum;
 import com.bobooi.mall.data.dto.BatchOperationResultDTO;
 import com.bobooi.mall.data.entity.OrderMaster;
 import com.bobooi.mall.data.service.concrete.OrderService;
+import com.bobooi.mall.data.service.concrete.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.Logical;
@@ -28,6 +29,8 @@ import java.util.List;
 public class OrderController {
     @Resource
     private OrderService orderService;
+    @Resource
+    private UserService userService;
 
     @ApiOperation("获取所有订单信息【需要管理员】")
     @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
@@ -54,11 +57,10 @@ public class OrderController {
 
     @ApiOperation("根据秒杀商品id生成订单")
     @PostMapping("/generateSec")
-    public ApplicationResponse<String> secKill(Integer productId, Integer customerAddrId, Integer productTypeId){
+    public ApplicationResponse<String> secKill(Integer productId, Integer productTypeId){
         AssertUtils.notNull(productId, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
-        AssertUtils.notNull(customerAddrId, new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG));
         AssertUtils.notNull(productTypeId, new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG));
-        return orderService.secKill(productId, customerAddrId, productTypeId)?
+        return orderService.secKill(productId, productTypeId,userService.info().getCustomerId())?
                 ApplicationResponse.succeed("创建订单成功"):
                 ApplicationResponse.fail(SystemCodeEnum.ARGUMENT_WRONG,"创建订单失败");
     }

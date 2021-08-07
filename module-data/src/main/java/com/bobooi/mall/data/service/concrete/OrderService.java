@@ -4,18 +4,17 @@ package com.bobooi.mall.data.service.concrete;
 import com.bobooi.mall.common.exception.ApplicationException;
 import com.bobooi.mall.common.exception.AssertUtils;
 import com.bobooi.mall.common.response.SystemCodeEnum;
+import com.bobooi.mall.common.utils.jackson.JsonUtils;
+import com.bobooi.mall.data.bo.OrderBO;
 import com.bobooi.mall.data.config.redis.RedisUtil;
 import com.bobooi.mall.data.dto.BatchOperationResultDTO;
 import com.bobooi.mall.data.dto.OperationResultDTO;
-import com.bobooi.mall.data.entity.CartGoods;
-import com.bobooi.mall.data.entity.CsmInf;
-import com.bobooi.mall.data.entity.OrderMaster;
-import com.bobooi.mall.data.entity.PdtInf;
-import com.bobooi.mall.data.repository.concrete.OrderMasterRepository;
-import com.bobooi.mall.data.repository.concrete.PdtInfoRepository;
-import com.bobooi.mall.data.repository.concrete.PdtTypeRepository;
+import com.bobooi.mall.data.entity.*;
+import com.bobooi.mall.data.repository.concrete.*;
 import com.bobooi.mall.data.service.BaseDataService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -47,6 +46,8 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
     OrderMasterRepository orderMasterRepository;
     @Resource
     UserService userService;
+    @Autowired
+    private AmqpTemplate rabbitTemplate;
 
     private ConcurrentHashMap<Integer,Boolean> goodSecMap;
 
@@ -56,8 +57,8 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
     }
 
     public boolean addOrder(double districtMoney, Integer productId,
-                           Integer productAmount, Integer productTypeId, Integer customerAddrId){
-
+                           Integer productAmount, Integer productTypeId,
+                            Integer customerId, Integer customerAddrId){
         PdtInf pdtInf = pdtInfoRepository.findByProductId(productId);
         if(productAmount>pdtInf.getInventory()){
             log.info( "对应商品库存不足！");
@@ -65,13 +66,13 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
         }
         SimpleDateFormat orderSnFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
 
-        String orderAddr = userService.getUserAddrStr(customerAddrId);
+        String orderAddr = userService.getUserAddrStr(customerAddrId, customerId);
         double orderMoney = pdtInf.getPrice()*productAmount;
-        String productTypeName = pdtTypeRepository.getById(productTypeId).getProductTypeName();
+        String productTypeName = pdtTypeRepository.findByProductTypeId(productTypeId).getProductTypeName();
 
         OrderMaster orderMaster = OrderMaster.builder()
                 .orderSn(Long.valueOf(orderSnFormat.format((new Date()).getTime())))
-                .customerId(userService.info().getCustomerId())
+                .customerId(customerId)
                 .orderAddr(orderAddr)
                 .picUrl(pdtInf.getPicUrl())
                 .productName(pdtInf.getProductName())
@@ -105,11 +106,14 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
                     if(null==cartGoods){
                         return OperationResultDTO.fail(cartGoodsId, "购物车商品不存在！");
                     }
-                    addOrder(districtMoney, cartGoods.getProductId(),
-                            cartGoods.getProductAmount(), cartGoods.getProductTypeId(), customerAddrId);
-                    cartGoodsService.deleteByCartGoodsId(cartGoodsId);
-                    userService.updateUserPoint(userService.getUserPoint()-point);
-                    return OperationResultDTO.success(cartGoodsId);
+                    if(addOrder(districtMoney, cartGoods.getProductId(),
+                            cartGoods.getProductAmount(), cartGoods.getProductTypeId(),
+                            cartGoods.getCustomerId(), customerAddrId)){
+                        cartGoodsService.deleteByCartGoodsId(cartGoodsId);
+                        userService.updateUserPoint(userService.getUserPoint()-point);
+                        return OperationResultDTO.success(cartGoodsId);
+                    }
+                    return OperationResultDTO.fail(cartGoodsId, "对应商品库存不足！");
                 }).collect(BatchOperationResultDTO.toBatchResult());
     }
 
@@ -123,7 +127,7 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
      }
 
     @Transactional
-     public boolean secKill(Integer productId, Integer customerAddrId, Integer productTypeId) {
+     public boolean secKill(Integer productId, Integer productTypeId, Integer customerId) {
          if(null!=goodSecMap.get(productId)&&goodSecMap.get(productId)){
              RedisUtil.decrementKey("product" + productId);
              if(Integer.parseInt(String.valueOf(RedisUtil.getObject("product" + productId)))<0){
@@ -135,7 +139,8 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
                  log.info("商品销售完了");
                  return false;
              }
-             addOrder(0,productId,1,productTypeId, customerAddrId);
+             OrderBO orderBO = new OrderBO(0,productId,1,productTypeId,customerId);
+             rabbitTemplate.convertAndSend("orderQueue", JsonUtils.toJsonString(orderBO));
              return true;
          }
          return false;

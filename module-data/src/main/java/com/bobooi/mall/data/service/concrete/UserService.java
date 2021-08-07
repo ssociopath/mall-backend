@@ -37,10 +37,10 @@ public class UserService extends BaseDataService<CsmLogin, Integer> {
     @Resource
     CsmAddrRepository csmAddrRepository;
 
-    public String getUserAddrStr(Integer customerAddrId){
+    public String getUserAddrStr(Integer customerAddrId, Integer customerId){
         StringBuilder stringBuilder = new StringBuilder();
-        CsmInf csmInf= csmInfRepository.findByCustomerId(info().getCustomerId());
-        CsmAddr csmAddr = csmAddrRepository.getById(customerAddrId);
+        CsmInf csmInf= csmInfRepository.findByCustomerId(customerId);
+        CsmAddr csmAddr = csmAddrRepository.findByCustomerAddrId(customerAddrId);
         return stringBuilder.append(csmInf.getCustomerName()).append(" ")
                 .append(csmInf.getMobilePhone()).append(" ")
                 .append(csmAddr.getAddress()).toString();
@@ -77,6 +77,10 @@ public class UserService extends BaseDataService<CsmLogin, Integer> {
     public CsmLogin info(){
         String account = JwtUtil.getCurrentClaim(JwtUtil.ACCOUNT);
         return getUserByAccount(account);
+    }
+
+    public CsmAddr getUserDefaultAddr(Integer customerId){
+        return csmAddrRepository.findByCustomerIdAndIsDefault(customerId, 1);
     }
 
     public List<CsmAddr> getAllCsmAddress(){

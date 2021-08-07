@@ -31,9 +31,10 @@ public class CartGoodsService extends BaseDataService<CartGoods, Integer> {
     @Resource
     private PdtAddiInfoRepository pdtAddiInfoRepository;
 
-    public CartGoods addCartGoods(Integer customerId, Integer productId, Integer productAmount, Integer productTypeId){
+    public CartGoods addCartGoods(Integer customerId, Integer productId, Integer productAmount, String productTypeName){
         PdtInf pdtInf = pdtInfoRepository.getById(productId);
-        PdtAddiInf pdtAddiInf = pdtAddiInfoRepository.findByProductIdAndProductTypeId(productId,productTypeId);
+        Integer productTypeId = pdtTypeRepository.findByProductTypeName(productTypeName).getProductTypeId();
+        PdtAddiInf pdtAddiInf = pdtAddiInfoRepository.findByProductIdAndProductTypeId(productId, productTypeId);
         AssertUtils.notNull(pdtAddiInf,new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG,"对应商品不存在！"));
         AssertUtils.isFalse(pdtInf.getInventory()<productAmount,new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG,"超出库存数量！"));
         CartGoods cartGoods = cartGoodsRepository.findByCustomerIdAndProductIdAndProductTypeId(customerId,productId,productTypeId);

@@ -9,4 +9,6 @@ import com.bobooi.mall.data.repository.DataRepository;
  */
 
 public interface PdtTypeRepository extends DataRepository<PdtType,Integer> {
+    PdtType findByProductTypeId(Integer productTypeId);
+    PdtType findByProductTypeName(String productTypeName);
 }
