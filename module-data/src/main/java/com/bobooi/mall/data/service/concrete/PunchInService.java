@@ -19,6 +19,8 @@ import java.time.LocalDate;
 public class PunchInService extends BaseDataService<PunchIn, Integer> {
     @Resource
     private PunchInRepository punchInRepository;
+    @Resource
+    private UserService userService;
 
     public static boolean checkHasPunchedIn(int bitmap, int dayOfMonth) {
         return (bitmap &= (1 << (1 - dayOfMonth))) != 0;
@@ -28,18 +30,20 @@ public class PunchInService extends BaseDataService<PunchIn, Integer> {
         return bitmap |= (1 << (1 - dayOfMonth));
     }
 
-    public PunchIn getMonthlyPunchIn(Integer userId, LocalDate today){
-        return punchInRepository.findPunchInByCustomerIdAndYearAndMonth(userId, today.getYear(), today.getMonthValue())
-                .orElseGet(()-> new PunchIn(userId, today.getYear(), today.getMonthValue(), 0));
+    public PunchIn getMonthlyPunchIn(LocalDate today){
+        Integer customerId = userService.info().getCustomerId();
+        return punchInRepository.findPunchInByCustomerIdAndYearAndMonth(customerId, today.getYear(), today.getMonthValue())
+                .orElseGet(()-> new PunchIn(customerId, today.getYear(), today.getMonthValue(), 0));
     }
 
-    public boolean dailyPunchIn(Integer userId, LocalDate today) {
-        PunchIn punchIn = getMonthlyPunchIn(userId, today);
+    public boolean dailyPunchIn(LocalDate today) {
+        PunchIn punchIn = getMonthlyPunchIn(today);
         if (checkHasPunchedIn(punchIn.getDailyBitmap(), today.getDayOfMonth())) {
             return false;
         }
         punchIn.setDailyBitmap(punchIn(punchIn.getDailyBitmap(), today.getDayOfMonth()));
         punchInRepository.save(punchIn);
+        userService.updateUserPoint(userService.getUserPoint()+5);
         return true;
     }
 }

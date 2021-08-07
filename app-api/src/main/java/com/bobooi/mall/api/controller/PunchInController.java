@@ -31,15 +31,12 @@ import java.util.stream.IntStream;
 public class PunchInController {
     @Resource
     PunchInService punchInService;
-    @Resource
-    UserService userService;
 
     @ApiOperation("获取该用户当月的签到日期")
     @GetMapping
     public ApplicationResponse<List<Integer>> getMonthlyPunchIn() {
-        CsmLogin csmLogin = userService.info();
         LocalDate today = LocalDate.now();
-        PunchIn punchIn = punchInService.getMonthlyPunchIn(csmLogin.getCustomerId(), LocalDate.now());
+        PunchIn punchIn = punchInService.getMonthlyPunchIn(LocalDate.now());
         if (punchIn == null) {
             return ApplicationResponse.succeed(new ArrayList<>());
         }
@@ -53,8 +50,7 @@ public class PunchInController {
     @ApiOperation("当前用户今日签到接口")
     @PostMapping
     public ApplicationResponse<String> punchIn() {
-        CsmLogin csmLogin = userService.info();
-        return punchInService.dailyPunchIn(csmLogin.getCustomerId(), LocalDate.now())
+        return punchInService.dailyPunchIn(LocalDate.now())
                 ? ApplicationResponse.succeed()
                 : ApplicationResponse.fail(SystemCodeEnum.FAILURE, "你今天已经签到过了哦");
     }
