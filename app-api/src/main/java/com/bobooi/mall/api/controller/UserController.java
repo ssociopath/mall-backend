@@ -188,17 +188,18 @@ public class UserController {
      * @return 用户地址列表
      */
     @ApiOperation("获取用户地址")
-    @GetMapping("/address/{customerId}")
-    public ApplicationResponse<List<CsmAddr>> getCsmAddressListByCustomerId(@PathVariable Integer customerId) {
-        return ApplicationResponse.succeed(userService.getCsmAddressListByCustomerId(customerId));
+    @GetMapping("/address")
+    public ApplicationResponse<List<CsmAddr>> getCsmAddressListByCustomerId() {
+        return ApplicationResponse.succeed(userService.getCsmAddressListByCustomerId(userService.info().getCustomerId()));
     }
 
     /**
-     * 获取所有用户所有地址信息
+     * 管理员获取所有用户所有地址信息
      *
      * @return 用户地址列表
      */
-    @ApiOperation("获取所有用户所有地址信息")
+    @ApiOperation("管理员获取所有用户所有地址信息")
+    @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
     @GetMapping("/allAddressInfo")
     public ApplicationResponse<List<CsmAddr>> getAllAddressInfo() {
         return ApplicationResponse.succeed(userService.getAllCsmAddress());
@@ -209,7 +210,7 @@ public class UserController {
      *
      * @return 用户地址实体
      */
-    @ApiOperation("获取所有用户所有地址信息")
+    @ApiOperation("根据地址id设置默认地址")
     @PostMapping("/setDefaultAddr/{customerAddrId}")
     public ApplicationResponse<CsmAddr> customerAddrId(@PathVariable Integer customerAddrId) {
         return ApplicationResponse.succeed(userService.setDefaultCsmAddress(customerAddrId));
