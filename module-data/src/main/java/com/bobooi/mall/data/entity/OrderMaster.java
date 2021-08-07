@@ -24,7 +24,6 @@ public class OrderMaster {
     private Integer orderId;
     private Integer orderSn;
     private Integer customerId;
-    private String shippingUser;
     private Integer customerAddrId;
     private Float orderMoney;
     private Float districtMoney;
