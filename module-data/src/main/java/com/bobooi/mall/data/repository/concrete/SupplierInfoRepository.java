@@ -17,4 +17,13 @@ public interface SupplierInfoRepository extends DataRepository<SupplierInf,Integ
      * @return
      */
     SupplierInf findBySupplierId(Integer supplierId);
+
+    /**
+     * 根据供应商名字和地址查找供应商信息
+     *
+     * @param supplierName 供应商名字
+     * @param address 供应商地址
+     * @return
+     */
+    SupplierInf findBySupplierNameAndAddress(String supplierName,String address);
 }
