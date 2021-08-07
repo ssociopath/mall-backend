@@ -1,6 +1,8 @@
 package com.bobooi.mall.api.controller;
 
 import com.bobooi.mall.data.entity.CsmLogin;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.web.bind.annotation.*;
 import com.bobooi.mall.common.response.ApplicationResponse;
@@ -24,6 +26,7 @@ import java.util.stream.IntStream;
 
 @CrossOrigin("*")
 @RestController
+@Api(tags = "签到管理")
 @RequestMapping("/punch")
 public class PunchInController {
     @Resource
@@ -31,10 +34,10 @@ public class PunchInController {
     @Resource
     UserService userService;
 
+    @ApiOperation("获取该用户当月的签到日期")
     @GetMapping
-    @RequiresAuthentication
     public ApplicationResponse<List<Integer>> getMonthlyPunchIn() {
-        CsmLogin csmLogin = userService.getUserByAccount(JwtUtil.getCurrentClaim(JwtUtil.ACCOUNT));
+        CsmLogin csmLogin = userService.info();
         LocalDate today = LocalDate.now();
         PunchIn punchIn = punchInService.getMonthlyPunchIn(csmLogin.getCustomerId(), LocalDate.now());
         if (punchIn == null) {
@@ -47,10 +50,10 @@ public class PunchInController {
         );
     }
 
+    @ApiOperation("当前用户今日签到接口")
     @PostMapping
-    @RequiresAuthentication
     public ApplicationResponse<String> punchIn() {
-        CsmLogin csmLogin = userService.getUserByAccount(JwtUtil.getCurrentClaim(JwtUtil.ACCOUNT));
+        CsmLogin csmLogin = userService.info();
         return punchInService.dailyPunchIn(csmLogin.getCustomerId(), LocalDate.now())
                 ? ApplicationResponse.succeed()
                 : ApplicationResponse.fail(SystemCodeEnum.FAILURE, "你今天已经签到过了哦");

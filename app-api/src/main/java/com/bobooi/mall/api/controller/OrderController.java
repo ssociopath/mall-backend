@@ -43,6 +43,6 @@ public class OrderController {
     @ApiOperation("根据购物车商品id列表生成订单")
     @PostMapping("/generate")
     public ApplicationResponse<BatchOperationResultDTO<String>> generateOrder(Integer[] cartGoodsIds, Integer customerAddrId, Integer point) {
-        return ApplicationResponse.succeed(orderService.addOrder(cartGoodsIds, customerAddrId, point));
+        return ApplicationResponse.succeed(orderService.addOrders(cartGoodsIds, customerAddrId, point));
     }
 }

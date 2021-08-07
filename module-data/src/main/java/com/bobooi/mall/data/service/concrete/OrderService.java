@@ -50,8 +50,9 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
 
     private ConcurrentHashMap<Integer,Boolean> goodSecMap;
 
+
     @Transactional
-    public BatchOperationResultDTO<String> addOrder(Integer[] cartGoodsIds, Integer customerAddrId, Integer point){
+    public BatchOperationResultDTO<String> addOrders(Integer[] cartGoodsIds, Integer customerAddrId, Integer point){
         AssertUtils.notNull(cartGoodsIds, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
         if(point>userService.getUserPoint()){
             return Arrays.stream(cartGoodsIds).map(cartGoodsId->
@@ -115,8 +116,8 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
     }
 
 //    @Transactional
-//     public boolean secKill(int goodId) {
-//         if(goodSecMap.get(goodId)){
+//     public boolean secKill(Integer cartGoodsIds, Integer customerAddrId) {
+//         if(goodSecMap.get(cartGoodsIds)){
 //             RedisUtil.decrementKey("good" + goodId);
 //             if(Integer.parseInt(String.valueOf(RedisUtil.getObject("good" + goodId)))<0){
 //                 goodSecMap.put(goodId,false);

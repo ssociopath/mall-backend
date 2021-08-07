@@ -25,7 +25,7 @@ public class SecKillController {
         return ApplicationResponse.succeed("初始化成功");
     }
 
-//    @GetMapping
+//    @GetMapping("")
 //    public ApplicationResponse<String> secKill(){
 //        return orderService.secKill(1)?
 //                ApplicationResponse.succeed("创建订单成功"):
