@@ -1,9 +1,11 @@
 package com.bobooi.mall.api.controller;
 
+import com.bobooi.mall.common.exception.ApplicationException;
+import com.bobooi.mall.common.exception.AssertUtils;
 import com.bobooi.mall.common.response.ApplicationResponse;
+import com.bobooi.mall.common.response.SystemCodeEnum;
 import com.bobooi.mall.data.dto.BatchOperationResultDTO;
 import com.bobooi.mall.data.entity.OrderMaster;
-import com.bobooi.mall.data.entity.PdtCategory;
 import com.bobooi.mall.data.service.concrete.OrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,8 +43,23 @@ public class OrderController {
     }
 
     @ApiOperation("根据购物车商品id列表生成订单")
-    @PostMapping("/generate")
-    public ApplicationResponse<BatchOperationResultDTO<String>> generateOrder(Integer[] cartGoodsIds, Integer customerAddrId, Integer point) {
-        return ApplicationResponse.succeed(orderService.addOrders(cartGoodsIds, customerAddrId, point));
+    @GetMapping("/generate")
+    public ApplicationResponse<BatchOperationResultDTO<Integer>> generateOrder(Integer[] cartGoodsIds, Integer customerAddrId, Integer point) {
+        AssertUtils.notNull(cartGoodsIds, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
+        AssertUtils.notNull(customerAddrId, new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG));
+        AssertUtils.notNull(point, new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG));
+        return ApplicationResponse.succeed(
+                orderService.addOrders(cartGoodsIds, customerAddrId, point));
+    }
+
+    @ApiOperation("根据秒杀商品id生成订单")
+    @PostMapping("/generateSec")
+    public ApplicationResponse<String> secKill(Integer productId, Integer customerAddrId, Integer productTypeId){
+        AssertUtils.notNull(productId, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
+        AssertUtils.notNull(customerAddrId, new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG));
+        AssertUtils.notNull(productTypeId, new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG));
+        return orderService.secKill(productId, customerAddrId, productTypeId)?
+                ApplicationResponse.succeed("创建订单成功"):
+                ApplicationResponse.fail(SystemCodeEnum.ARGUMENT_WRONG,"创建订单失败");
     }
 }

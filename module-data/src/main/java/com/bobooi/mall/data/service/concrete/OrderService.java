@@ -50,85 +50,94 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
 
     private ConcurrentHashMap<Integer,Boolean> goodSecMap;
 
+    @PostConstruct
+    public void initMap(){
+        goodSecMap = new ConcurrentHashMap<>();
+    }
+
+    public boolean addOrder(double districtMoney, Integer productId,
+                           Integer productAmount, Integer productTypeId, Integer customerAddrId){
+
+        PdtInf pdtInf = pdtInfoRepository.findByProductId(productId);
+        if(productAmount>pdtInf.getInventory()){
+            log.info( "对应商品库存不足！");
+            return false;
+        }
+        SimpleDateFormat orderSnFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
+
+        String orderAddr = userService.getUserAddrStr(customerAddrId);
+        double orderMoney = pdtInf.getPrice()*productAmount;
+        String productTypeName = pdtTypeRepository.getById(productTypeId).getProductTypeName();
+
+        OrderMaster orderMaster = OrderMaster.builder()
+                .orderSn(Long.valueOf(orderSnFormat.format((new Date()).getTime())))
+                .customerId(userService.info().getCustomerId())
+                .orderAddr(orderAddr)
+                .picUrl(pdtInf.getPicUrl())
+                .productName(pdtInf.getProductName())
+                .productTypeName(productTypeName)
+                .productCnt(productAmount)
+                .districtMoney(districtMoney)
+                .orderMoney(orderMoney)
+                .payMoney(orderMoney-districtMoney)
+                .payTime(new Timestamp(System.currentTimeMillis()))
+                .build();
+
+        this.insert(orderMaster);
+        pdtInf.setInventory(pdtInf.getInventory()-productAmount);
+        pdtInfoRepository.save(pdtInf);
+        return true;
+    }
+
 
     @Transactional
-    public BatchOperationResultDTO<String> addOrders(Integer[] cartGoodsIds, Integer customerAddrId, Integer point){
-        AssertUtils.notNull(cartGoodsIds, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
+    public BatchOperationResultDTO<Integer> addOrders(Integer[] cartGoodsIds, Integer customerAddrId, Integer point){
         if(point>userService.getUserPoint()){
             return Arrays.stream(cartGoodsIds).map(cartGoodsId->
-                    OperationResultDTO.fail(String.valueOf(cartGoodsId), "用户积分不足！"))
+                    OperationResultDTO.fail(cartGoodsId, "用户积分不足！"))
                     .collect(BatchOperationResultDTO.toBatchResult());
         }
-        SimpleDateFormat orderSnFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");;
         double districtMoney = point/10.0/cartGoodsIds.length;
 
         return  Arrays.stream(cartGoodsIds)
                 .map(cartGoodsId -> {
                     CartGoods cartGoods = cartGoodsService.getOne(cartGoodsId).orElse(null);
                     if(null==cartGoods){
-                        return OperationResultDTO.fail(String.valueOf(cartGoodsId), "购物车商品不存在！");
+                        return OperationResultDTO.fail(cartGoodsId, "购物车商品不存在！");
                     }
-                    PdtInf pdtInf = pdtInfoRepository.findByProductId(cartGoods.getProductId());
-                    if(cartGoods.getProductAmount()>pdtInf.getInventory()){
-                        return OperationResultDTO.fail(String.valueOf(cartGoodsId), "对应商品库存不足！");
-                    }
-
-                    String orderAddr = userService.getUserAddrStr(customerAddrId);
-                    double orderMoney = pdtInf.getPrice()*cartGoods.getProductAmount();
-                    String productTypeName = pdtTypeRepository.getById(cartGoods.getProductTypeId()).getProductTypeName();
-
-                    OrderMaster orderMaster = OrderMaster.builder()
-                            .orderSn(Long.valueOf(orderSnFormat.format((new Date()).getTime())))
-                            .customerId(userService.info().getCustomerId())
-                            .orderAddr(orderAddr)
-                            .picUrl(pdtInf.getPicUrl())
-                            .productName(pdtInf.getProductName())
-                            .productTypeName(productTypeName)
-                            .productCnt(cartGoods.getProductAmount())
-                            .districtMoney(districtMoney)
-                            .orderMoney(orderMoney)
-                            .payMoney(orderMoney-districtMoney)
-                            .build();
-
-                    this.insert(orderMaster);
-                    pdtInf.setInventory(pdtInf.getInventory()-cartGoods.getProductAmount());
-                    pdtInfoRepository.save(pdtInf);
+                    addOrder(districtMoney, cartGoods.getProductId(),
+                            cartGoods.getProductAmount(), cartGoods.getProductTypeId(), customerAddrId);
                     cartGoodsService.deleteByCartGoodsId(cartGoodsId);
                     userService.updateUserPoint(userService.getUserPoint()-point);
-
-                    return OperationResultDTO.success(String.valueOf(cartGoodsId));
+                    return OperationResultDTO.success(cartGoodsId);
                 }).collect(BatchOperationResultDTO.toBatchResult());
     }
-
-    @PostConstruct
-     public void initMap(){
-         goodSecMap = new ConcurrentHashMap<>();
-     }
-
-     @Transactional
-     public void initRedis(int goodId) {
-         RedisUtil.setObject("good" + goodId, 20);
-         goodSecMap.put(goodId,true);
-     }
 
     public List<OrderMaster> findAllByCustomerId() {
         return orderMasterRepository.findAllByCustomerId(userService.info().getCustomerId());
     }
 
-//    @Transactional
-//     public boolean secKill(Integer cartGoodsIds, Integer customerAddrId) {
-//         if(goodSecMap.get(cartGoodsIds)){
-//             RedisUtil.decrementKey("good" + goodId);
-//             if(Integer.parseInt(String.valueOf(RedisUtil.getObject("good" + goodId)))<0){
-//                 goodSecMap.put(goodId,false);
-//                 RedisUtil.deleteKey("good" + goodId);
-//                 goodRepository.updateStockByGoodId(goodId);
-//                 log.info("商品销售完了");
-//                 return false;
-//             }
-////             this.insert(new Order(null,goodId,1));
-//             return true;
-//         }
-//         return false;
-//     }
+     public void initRedis(Integer productId) {
+         RedisUtil.setObject("product" + productId, 20);
+         goodSecMap.put(productId,true);
+     }
+
+    @Transactional
+     public boolean secKill(Integer productId, Integer customerAddrId, Integer productTypeId) {
+         if(null!=goodSecMap.get(productId)&&goodSecMap.get(productId)){
+             RedisUtil.decrementKey("product" + productId);
+             if(Integer.parseInt(String.valueOf(RedisUtil.getObject("product" + productId)))<0){
+                 goodSecMap.put(productId,false);
+                 RedisUtil.deleteKey("product" + productId);
+                 if(pdtInfoRepository.findByProductId(productId)!=null){
+                     pdtInfoRepository.deleteByProductId(productId);
+                 }
+                 log.info("商品销售完了");
+                 return false;
+             }
+             addOrder(0,productId,1,productTypeId, customerAddrId);
+             return true;
+         }
+         return false;
+     }
 }

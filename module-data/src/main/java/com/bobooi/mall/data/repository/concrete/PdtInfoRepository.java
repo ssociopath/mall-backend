@@ -2,6 +2,9 @@ package com.bobooi.mall.data.repository.concrete;
 
 import com.bobooi.mall.data.entity.PdtInf;
 import com.bobooi.mall.data.repository.DataRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;

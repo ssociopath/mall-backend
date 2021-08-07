@@ -10,6 +10,7 @@ import com.bobooi.mall.common.response.SystemCodeEnum;
 import com.bobooi.mall.data.entity.*;
 import com.bobooi.mall.data.repository.concrete.SupplierInfoRepository;
 import com.bobooi.mall.data.service.concrete.GoodsService;
+import com.bobooi.mall.data.service.concrete.OrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,9 @@ public class GoodsController {
 
     @Resource
     GoodsService goodsService;
+
+    @Resource
+    OrderService orderService;
 
     /**
      * 获取所有商品分类
@@ -164,7 +168,10 @@ public class GoodsController {
                 goodsService.findAll()
                         .stream()
                         .filter(pdfInfo -> pdfInfo.getRestTime() != null)
-                        .map(pdtInfo -> GoodsVO.fromPdtInfAndSupplierInf(pdtInfo, supplierInfoRepository.findBySupplierId(pdtInfo.getSupplierId())))
+                        .map(pdtInfo -> {
+                            orderService.initRedis(pdtInfo.getProductId());
+                            return GoodsVO.fromPdtInfAndSupplierInf(pdtInfo, supplierInfoRepository.findBySupplierId(pdtInfo.getSupplierId()));
+                        })
                         .collect(Collectors.toList())
         );
     }
