@@ -7,6 +7,7 @@ import com.bobooi.mall.common.utils.misc.Constant;
 import com.bobooi.mall.common.utils.misc.JwtUtil;
 import com.bobooi.mall.data.bo.UserDetailBO;
 import com.bobooi.mall.data.entity.CsmAddr;
+import com.bobooi.mall.data.entity.CsmInf;
 import com.bobooi.mall.data.repository.concrete.CsmAddrRepository;
 import com.bobooi.mall.data.repository.concrete.CsmInfRepository;
 import com.bobooi.mall.data.repository.concrete.CsmLoginRepository;
@@ -35,6 +36,15 @@ public class UserService extends BaseDataService<CsmLogin, Integer> {
     CsmInfRepository csmInfRepository;
     @Resource
     CsmAddrRepository csmAddrRepository;
+
+    public String getUserAddrStr(Integer customerAddrId){
+        StringBuilder stringBuilder = new StringBuilder();
+        CsmInf csmInf= csmInfRepository.findByCustomerId(info().getCustomerId());
+        CsmAddr csmAddr = csmAddrRepository.getById(customerAddrId);
+        return stringBuilder.append(csmInf.getCustomerName()).append(" ")
+                .append(csmInf.getMobilePhone()).append(" ")
+                .append(csmAddr.getAddress()).toString();
+    }
 
     public List<CsmAddr> getUserAddrList(){
         return csmAddrRepository.findAll();
@@ -105,5 +115,15 @@ public class UserService extends BaseDataService<CsmLogin, Integer> {
         CsmAddr csmAddrInDB=csmAddrRepository.getById(customerAddrId);
         AssertUtils.notNull(csmAddrInDB,new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG,"该地址不存在"));
         csmAddrRepository.deleteById(customerAddrId);
+    }
+
+    public Integer getUserPoint() {
+        return csmInfRepository.findByCustomerId(info().getCustomerId()).getUserPoint();
+    }
+
+    public void updateUserPoint(Integer point) {
+        CsmInf csmInf = csmInfRepository.findByCustomerId(info().getCustomerId());
+        csmInf.setUserPoint(point);
+        csmInfRepository.save(csmInf);
     }
 }

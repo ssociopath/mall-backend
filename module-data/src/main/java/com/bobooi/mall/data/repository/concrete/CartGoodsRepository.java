@@ -2,7 +2,9 @@ package com.bobooi.mall.data.repository.concrete;
 
 import com.bobooi.mall.data.entity.CartGoods;
 import com.bobooi.mall.data.repository.DataRepository;
+import org.springframework.data.jpa.repository.Modifying;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -13,7 +15,12 @@ import java.util.List;
 public interface CartGoodsRepository extends DataRepository<CartGoods, Integer> {
     List<CartGoods> findAllByCustomerId(Integer customerId);
 
+    @Transactional
+    @Modifying
     void deleteByCartGoodsId(Integer cartGoodsId);
+
+    @Transactional
+    @Modifying
     void deleteAllByCustomerId(Integer customerId);
     CartGoods findByCustomerIdAndProductIdAndProductTypeId(Integer customerId, Integer productId, Integer productTypeId);
 }

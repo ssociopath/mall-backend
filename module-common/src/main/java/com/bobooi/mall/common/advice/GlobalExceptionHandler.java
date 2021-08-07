@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     public ApplicationResponse<String> defaultErrorHandler(HttpServletRequest request, Exception exception){
         if(exception instanceof ApplicationException){
             ApplicationException applicationException = (ApplicationException) exception;
-            log.info("捕获应用错误：",applicationException);
+            log.info("捕获应用错误："+ applicationException.getResponseMessage());
             return ApplicationResponse.fail(applicationException.getSystemCode(), applicationException.getResponseMessage());
         } else if (exception instanceof IllegalArgumentException
                 || exception instanceof HttpMessageNotReadableException

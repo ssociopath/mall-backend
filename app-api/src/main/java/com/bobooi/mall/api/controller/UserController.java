@@ -41,6 +41,17 @@ public class UserController {
     UserService userService;
 
     /**
+     * 获取当前用户积分
+     *
+     * @return 用户积分
+     */
+    @ApiOperation("获取当前用户积分")
+    @GetMapping("/point")
+    public ApplicationResponse<Integer> getUserPoint() {
+        return ApplicationResponse.succeed(userService.getUserPoint());
+    }
+
+    /**
      * 管理员获取地址用户列表
      *
      * @return 用户地址列表
@@ -166,7 +177,7 @@ public class UserController {
      */
     @ApiOperation("删除用户地址")
     @DeleteMapping("/address")
-    public ApplicationResponse deleteCsmAddrByCsmAddrId(Integer customerAddrId) {
+    public ApplicationResponse<Void> deleteCsmAddrByCsmAddrId(Integer customerAddrId) {
         userService.deleteCsmAddrByCsmAddrId(customerAddrId);
         return ApplicationResponse.succeed("地址删除成功");
     }

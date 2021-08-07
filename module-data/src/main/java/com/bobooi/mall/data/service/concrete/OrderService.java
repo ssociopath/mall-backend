@@ -1,10 +1,14 @@
 package com.bobooi.mall.data.service.concrete;
 
 
+import com.bobooi.mall.common.exception.ApplicationException;
+import com.bobooi.mall.common.exception.AssertUtils;
+import com.bobooi.mall.common.response.SystemCodeEnum;
 import com.bobooi.mall.data.config.redis.RedisUtil;
 import com.bobooi.mall.data.dto.BatchOperationResultDTO;
 import com.bobooi.mall.data.dto.OperationResultDTO;
 import com.bobooi.mall.data.entity.CartGoods;
+import com.bobooi.mall.data.entity.CsmInf;
 import com.bobooi.mall.data.entity.OrderMaster;
 import com.bobooi.mall.data.entity.PdtInf;
 import com.bobooi.mall.data.repository.concrete.OrderMasterRepository;
@@ -48,23 +52,27 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
 
     @Transactional
     public BatchOperationResultDTO<String> addOrder(Integer[] cartGoodsIds, Integer customerAddrId, Integer point){
-        SimpleDateFormat orderSnFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
+        AssertUtils.notNull(cartGoodsIds, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
+        if(point>userService.getUserPoint()){
+            return Arrays.stream(cartGoodsIds).map(cartGoodsId->
+                    OperationResultDTO.fail(String.valueOf(cartGoodsId), "用户积分不足！"))
+                    .collect(BatchOperationResultDTO.toBatchResult());
+        }
+        SimpleDateFormat orderSnFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");;
         double districtMoney = point/10.0/cartGoodsIds.length;
 
         return  Arrays.stream(cartGoodsIds)
                 .map(cartGoodsId -> {
                     CartGoods cartGoods = cartGoodsService.getOne(cartGoodsId).orElse(null);
                     if(null==cartGoods){
-                        return OperationResultDTO.fail(String.valueOf(cartGoodsId), "购物车商品不存在");
+                        return OperationResultDTO.fail(String.valueOf(cartGoodsId), "购物车商品不存在！");
                     }
                     PdtInf pdtInf = pdtInfoRepository.findByProductId(cartGoods.getProductId());
                     if(cartGoods.getProductAmount()>pdtInf.getInventory()){
                         return OperationResultDTO.fail(String.valueOf(cartGoodsId), "对应商品库存不足！");
                     }
-                    pdtInf.setInventory(pdtInf.getInventory()-cartGoods.getProductAmount());
-                    pdtInfoRepository.save(pdtInf);
 
-                    String orderAddr = "王小宝 12313123312 武汉理工大学北二食堂二楼烤鸭饭-招牌烤鸭饭";
+                    String orderAddr = userService.getUserAddrStr(customerAddrId);
                     double orderMoney = pdtInf.getPrice()*cartGoods.getProductAmount();
                     String productTypeName = pdtTypeRepository.getById(cartGoods.getProductTypeId()).getProductTypeName();
 
@@ -82,7 +90,11 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
                             .build();
 
                     this.insert(orderMaster);
+                    pdtInf.setInventory(pdtInf.getInventory()-cartGoods.getProductAmount());
+                    pdtInfoRepository.save(pdtInf);
                     cartGoodsService.deleteByCartGoodsId(cartGoodsId);
+                    userService.updateUserPoint(userService.getUserPoint()-point);
+
                     return OperationResultDTO.success(String.valueOf(cartGoodsId));
                 }).collect(BatchOperationResultDTO.toBatchResult());
     }
