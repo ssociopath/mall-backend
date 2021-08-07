@@ -19,6 +19,7 @@ import com.bobooi.mall.data.entity.CsmLogin;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -66,5 +67,43 @@ public class UserService extends BaseDataService<CsmLogin, Integer> {
     public CsmLogin info(){
         String account = JwtUtil.getCurrentClaim(JwtUtil.ACCOUNT);
         return getUserByAccount(account);
+    }
+
+    public List<CsmAddr> getAllCsmAddress(){
+        return csmAddrRepository.findAll();
+    }
+
+    public List<CsmAddr> getCsmAddressListByCustomerId(Integer customerId){
+        return csmAddrRepository.findAllByCustomerId(customerId);
+    }
+
+    public CsmAddr addCsmAddress(Integer customerId,Integer zipcode,String address){
+        return csmAddrRepository.save(new CsmAddr(null,customerId,zipcode,address,null));
+    }
+
+    public CsmAddr updateCsmAddress(Integer customerAddrId,Integer zipcode,String address){
+        CsmAddr csmAddrInDB=csmAddrRepository.getById(customerAddrId);
+        AssertUtils.notNull(csmAddrInDB,new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG,"该地址不存在"));
+        csmAddrInDB.setZipcode(zipcode);
+        csmAddrInDB.setAddress(address);
+        return csmAddrRepository.save(csmAddrInDB);
+    }
+
+    public CsmAddr setDefaultCsmAddress(Integer customerAddrId){
+        CsmAddr csmAddrInDB=csmAddrRepository.getById(customerAddrId);
+        AssertUtils.notNull(csmAddrInDB,new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG,"该地址不存在"));
+        Optional.ofNullable(csmAddrRepository.findByCustomerIdAndIsDefault(csmAddrInDB.getCustomerId(),1))
+                .ifPresent(oldDefaultCsmAddr-> {
+                    oldDefaultCsmAddr.setIsDefault(0);
+                    csmAddrRepository.save(oldDefaultCsmAddr);
+                });
+        csmAddrInDB.setIsDefault(1);
+        return csmAddrRepository.save(csmAddrInDB);
+    }
+
+    public void deleteCsmAddrByCsmAddrId(Integer customerAddrId){
+        CsmAddr csmAddrInDB=csmAddrRepository.getById(customerAddrId);
+        AssertUtils.notNull(csmAddrInDB,new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG,"该地址不存在"));
+        csmAddrRepository.deleteById(customerAddrId);
     }
 }

@@ -42,6 +42,7 @@ public class UserController {
 
     /**
      * 管理员获取地址用户列表
+     *
      * @return 用户地址列表
      */
     @ApiOperation("管理员获取用户地址列表")
@@ -53,6 +54,7 @@ public class UserController {
 
     /**
      * 管理员获取用户列表
+     *
      * @return 用户列表
      */
     @ApiOperation("管理员获取用户详细信息列表")
@@ -66,6 +68,7 @@ public class UserController {
 
     /**
      * 获取登录信息
+     *
      * @return 登录信息
      */
     @ApiOperation("获取登录信息")
@@ -75,7 +78,7 @@ public class UserController {
         CsmLogin csmLogin = userService.info();
         // 用户是否存在
         if (csmLogin == null) {
-            return ApplicationResponse.fail(SystemCodeEnum.NEED_LOGIN,"未登录");
+            return ApplicationResponse.fail(SystemCodeEnum.NEED_LOGIN, "未登录");
         }
         // 获取当前登录用户
         return ApplicationResponse.succeed("您已经登录了", UserVO.fromUser(csmLogin));
@@ -107,12 +110,13 @@ public class UserController {
 
     /**
      * 用户登录
+     *
      * @return 登录结果
      */
     @ApiOperation("用户登录")
     @PostMapping("/login")
     public ApplicationResponse<Void> login(String account, String password, HttpServletResponse httpServletResponse) throws Exception {
-        if(!userService.match(account, password)){
+        if (!userService.match(account, password)) {
             return ApplicationResponse.fail(SystemCodeEnum.NEED_LOGIN, "帐号不存在或密码错误");
         }
 
@@ -127,19 +131,87 @@ public class UserController {
 
     /**
      * 剔除登录状态
+     *
      * @return 剔除结果
      */
     @ApiOperation("注销")
     @DeleteMapping("/logout")
     public ApplicationResponse<String> deleteOnline() {
         CsmLogin csmLogin = userService.info();
-        if(csmLogin ==null){
+        if (csmLogin == null) {
             return ApplicationResponse.fail(SystemCodeEnum.ARGUMENT_WRONG, "用户不存在！");
         }
         String key = Constant.REDIS_REFRESH_TOKEN + csmLogin.getLoginName();
-        if(RedisUtil.hasKey(key)){
+        if (RedisUtil.hasKey(key)) {
             RedisUtil.deleteKey(key);
         }
         return ApplicationResponse.succeed();
+    }
+
+    /**
+     * 增加用户地址
+     *
+     * @return 用户地址实体
+     */
+    @ApiOperation("增加用户地址")
+    @PostMapping("/address/add")
+    public ApplicationResponse<CsmAddr> addCsmAddr(Integer customerId, Integer zipcode, String address) {
+        return ApplicationResponse.succeed(userService.addCsmAddress(customerId, zipcode, address));
+    }
+
+    /**
+     * 删除用户地址
+     *
+     * @return 用户地址实体
+     */
+    @ApiOperation("删除用户地址")
+    @DeleteMapping("/address")
+    public ApplicationResponse deleteCsmAddrByCsmAddrId(Integer customerAddrId) {
+        userService.deleteCsmAddrByCsmAddrId(customerAddrId);
+        return ApplicationResponse.succeed("地址删除成功");
+    }
+
+    /**
+     * 修改用户地址
+     *
+     * @return 用户地址实体
+     */
+    @ApiOperation("修改用户地址")
+    @PostMapping("/address/update")
+    public ApplicationResponse<CsmAddr> deleteCsmAddrByCsmAddrId(Integer customerAddrId, Integer zipcode, String address) {
+        return ApplicationResponse.succeed("地址修改成功", userService.updateCsmAddress(customerAddrId, zipcode, address));
+    }
+
+    /**
+     * 根据用户id获取用户地址列表
+     *
+     * @return 用户地址列表
+     */
+    @ApiOperation("获取用户地址")
+    @GetMapping("/address/{customerId}")
+    public ApplicationResponse<List<CsmAddr>> getCsmAddressListByCustomerId(@PathVariable Integer customerId) {
+        return ApplicationResponse.succeed(userService.getCsmAddressListByCustomerId(customerId));
+    }
+
+    /**
+     * 获取所有用户所有地址信息
+     *
+     * @return 用户地址列表
+     */
+    @ApiOperation("获取所有用户所有地址信息")
+    @GetMapping("/allAddressInfo")
+    public ApplicationResponse<List<CsmAddr>> getAllAddressInfo() {
+        return ApplicationResponse.succeed(userService.getAllCsmAddress());
+    }
+
+    /**
+     * 根据地址id设置默认地址
+     *
+     * @return 用户地址实体
+     */
+    @ApiOperation("获取所有用户所有地址信息")
+    @PostMapping("/setDefaultAddr/{customerAddrId}")
+    public ApplicationResponse<CsmAddr> customerAddrId(@PathVariable Integer customerAddrId) {
+        return ApplicationResponse.succeed(userService.setDefaultCsmAddress(customerAddrId));
     }
 }
