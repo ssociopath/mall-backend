@@ -29,15 +29,16 @@ public class PdtDetailVO {
     private Integer inventory;
     private String description;
     private String supplierName;
-    private List<String> productTypeNameList;
+    private List<ProductTypeVO> productTypeList;
     private String supplierAddress;
     private Timestamp restTime;
 
     public static PdtDetailVO fromPdtDetailInfList(List<PdtDetailInf> pdtDetailInfList) {
         PdtDetailInf firstPdtDetailInf=pdtDetailInfList.get(0);
         return PdtDetailVO.builder()
-                .productTypeNameList(pdtDetailInfList.stream()
-                        .map(PdtDetailInf::getProductTypeName)
+                .productTypeList(pdtDetailInfList.stream()
+                        .map(pdtDetailInf ->
+                                new ProductTypeVO(pdtDetailInf.getProductId(), pdtDetailInf.getProductTypeName()))
                         .collect(Collectors.toList()))
                 .productId(firstPdtDetailInf.getProductId())
                 .productName(firstPdtDetailInf.getProductName())

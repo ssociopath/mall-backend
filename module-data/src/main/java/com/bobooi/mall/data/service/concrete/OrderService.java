@@ -60,10 +60,6 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
                            Integer productAmount, Integer productTypeId,
                             Integer customerId, Integer customerAddrId){
         PdtInf pdtInf = pdtInfoRepository.findByProductId(productId);
-        if(productAmount>pdtInf.getInventory()){
-            log.info( "对应商品库存不足！");
-            return false;
-        }
         SimpleDateFormat orderSnFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
 
         String orderAddr = userService.getUserAddrStr(customerAddrId, customerId);
@@ -85,8 +81,6 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
                 .build();
 
         this.insert(orderMaster);
-        pdtInf.setInventory(pdtInf.getInventory()-productAmount);
-        pdtInfoRepository.save(pdtInf);
         return true;
     }
 
@@ -129,8 +123,8 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
     @Transactional
      public boolean secKill(Integer productId, Integer productTypeId, Integer customerId) {
          if(null!=goodSecMap.get(productId)&&goodSecMap.get(productId)){
-             RedisUtil.decrementKey("product" + productId);
-             if(Integer.parseInt(String.valueOf(RedisUtil.getObject("product" + productId)))<0){
+             Long count = RedisUtil.decrementKey("product" + productId);
+             if(count!=null&&count<0){
                  goodSecMap.put(productId,false);
                  RedisUtil.deleteKey("product" + productId);
                  if(pdtInfoRepository.findByProductId(productId)!=null){
@@ -139,8 +133,8 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
                  log.info("商品销售完了");
                  return false;
              }
-             OrderBO orderBO = new OrderBO(0,productId,1,productTypeId,customerId);
-             rabbitTemplate.convertAndSend("orderQueue", JsonUtils.toJsonString(orderBO));
+             addOrder(0,productId,1,productTypeId,customerId,
+                     userService.getUserDefaultAddr(customerId).getCustomerAddrId());
              return true;
          }
          return false;

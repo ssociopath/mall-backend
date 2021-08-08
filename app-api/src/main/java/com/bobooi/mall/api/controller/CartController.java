@@ -57,13 +57,13 @@ public class CartController {
      */
     @ApiOperation("添加商品至获取购物车")
     @PostMapping("/add")
-    public ApplicationResponse<CartGoods> addCartGoods(Integer productId, Integer productAmount,  String productTypeName) {
+    public ApplicationResponse<CartGoods> addCartGoods(Integer productId, Integer productAmount,  Integer productTypeId) {
         Integer customerId = userService.info().getCustomerId();
         AssertUtils.notNull(customerId, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
         AssertUtils.notNull(productId, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
         AssertUtils.notNull(productAmount, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
-        AssertUtils.notNull(productTypeName, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
-        return ApplicationResponse.succeed("添加至购物车成功",cartGoodsService.addCartGoods(customerId, productId, productAmount, productTypeName));
+        AssertUtils.notNull(productTypeId, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
+        return ApplicationResponse.succeed("添加至购物车成功",cartGoodsService.addCartGoods(customerId, productId, productAmount, productTypeId));
     }
 
     /**

@@ -82,14 +82,13 @@ public class RedisUtil {
         return key==null? null:redisTemplate.opsForValue().get(key);
     }
 
-    public static boolean decrementKey(String key){
+    public static Long decrementKey(String key){
         try{
-            redisTemplate.opsForValue().decrement(key);
-            return true;
+            return redisTemplate.opsForValue().decrement(key);
         }catch (Exception e){
             log.info(e.getMessage());
         }
-        return false;
+        return null;
     }
 
     public static boolean deleteKey(String key){
