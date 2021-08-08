@@ -3,6 +3,7 @@ package com.bobooi.mall.data.service.concrete;
 import com.bobooi.mall.common.exception.ApplicationException;
 import com.bobooi.mall.common.exception.AssertUtils;
 import com.bobooi.mall.common.response.SystemCodeEnum;
+import com.bobooi.mall.data.bo.ProductTypeBO;
 import com.bobooi.mall.data.entity.*;
 import com.bobooi.mall.data.repository.concrete.*;
 import com.bobooi.mall.data.service.BaseDataService;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 类描述
@@ -39,6 +41,14 @@ public class GoodsService extends BaseDataService<PdtInf, Integer> {
 
     @Resource
     SupplierInfoRepository supplierInfoRepository;
+
+    public List<ProductTypeBO> getProductTypeBO(Integer productId) {
+        return pdtAddiInfoRepository.findAllByProductId(productId).stream().map(pdtAddiInf -> {
+            Integer productTypeId = pdtAddiInf.getProductTypeId();
+            String productTypeName = pdtTypeRepository.findByProductTypeId(productTypeId).getProductTypeName();
+            return new ProductTypeBO(productTypeId, productTypeName);
+        }).collect(Collectors.toList());
+    }
 
     /**
      * 获取商品分类信息

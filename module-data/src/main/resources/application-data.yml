@@ -14,12 +14,6 @@ spring:
     port: 6379
     database: 1
 
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: bobo
-    password: bobomq
-
 
 
 

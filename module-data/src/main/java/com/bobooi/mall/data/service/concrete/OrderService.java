@@ -13,7 +13,6 @@ import com.bobooi.mall.data.entity.*;
 import com.bobooi.mall.data.repository.concrete.*;
 import com.bobooi.mall.data.service.BaseDataService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,8 +45,6 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
     OrderMasterRepository orderMasterRepository;
     @Resource
     UserService userService;
-    @Autowired
-    private AmqpTemplate rabbitTemplate;
 
     private ConcurrentHashMap<Integer,Boolean> goodSecMap;
 

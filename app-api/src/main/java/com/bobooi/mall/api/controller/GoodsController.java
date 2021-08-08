@@ -2,7 +2,7 @@ package com.bobooi.mall.api.controller;
 
 import com.bobooi.mall.api.module.vo.GoodsVO;
 import com.bobooi.mall.api.module.vo.PdtDetailVO;
-import com.bobooi.mall.api.module.vo.SecGoodsVO;
+import com.bobooi.mall.data.bo.ProductTypeBO;
 import com.bobooi.mall.common.exception.ApplicationException;
 import com.bobooi.mall.common.exception.AssertUtils;
 import com.bobooi.mall.common.response.ApplicationResponse;
@@ -184,7 +184,9 @@ public class GoodsController {
     @ApiOperation("根据商品id获取商品详细数据")
     @GetMapping("/productDetailInfo/{productId}")
     public ApplicationResponse<PdtDetailVO> getPdtDetailInfoByProductId(@PathVariable Integer productId) {
-        return ApplicationResponse.succeed(PdtDetailVO.fromPdtDetailInfList(goodsService.getPdtDetailInfoByPdtId(productId)));
+        List<PdtDetailInf> pdtDetailInfList = goodsService.getPdtDetailInfoByPdtId(productId);
+        List<ProductTypeBO> productTypeBOList = goodsService.getProductTypeBO(productId);
+        return ApplicationResponse.succeed(PdtDetailVO.fromPdtDetailInfListAndProductTypeList(pdtDetailInfList, productTypeBOList));
     }
 
     /**

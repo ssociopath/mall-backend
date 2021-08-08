@@ -1,5 +1,6 @@
 package com.bobooi.mall.api.module.vo;
 
+import com.bobooi.mall.data.bo.ProductTypeBO;
 import com.bobooi.mall.data.entity.PdtDetailInf;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
@@ -29,17 +29,14 @@ public class PdtDetailVO {
     private Integer inventory;
     private String description;
     private String supplierName;
-    private List<ProductTypeVO> productTypeList;
+    private List<ProductTypeBO> productTypeList;
     private String supplierAddress;
     private Timestamp restTime;
 
-    public static PdtDetailVO fromPdtDetailInfList(List<PdtDetailInf> pdtDetailInfList) {
+    public static PdtDetailVO fromPdtDetailInfListAndProductTypeList(List<PdtDetailInf> pdtDetailInfList, List<ProductTypeBO> productTypeList) {
         PdtDetailInf firstPdtDetailInf=pdtDetailInfList.get(0);
         return PdtDetailVO.builder()
-                .productTypeList(pdtDetailInfList.stream()
-                        .map(pdtDetailInf ->
-                                new ProductTypeVO(pdtDetailInf.getProductId(), pdtDetailInf.getProductTypeName()))
-                        .collect(Collectors.toList()))
+                .productTypeList(productTypeList)
                 .productId(firstPdtDetailInf.getProductId())
                 .productName(firstPdtDetailInf.getProductName())
                 .picUrl(firstPdtDetailInf.getPicUrl())
