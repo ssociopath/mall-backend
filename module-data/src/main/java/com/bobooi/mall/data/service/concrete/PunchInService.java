@@ -23,11 +23,11 @@ public class PunchInService extends BaseDataService<PunchIn, Integer> {
     private UserService userService;
 
     public static boolean checkHasPunchedIn(int bitmap, int dayOfMonth) {
-        return (bitmap &= (1 << (1 - dayOfMonth))) != 0;
+        return (bitmap &= (1 << (dayOfMonth - 1))) != 0;
     }
 
     public static int punchIn(int bitmap, int dayOfMonth) {
-        return bitmap |= (1 << (1 - dayOfMonth));
+        return bitmap |= (1 << (dayOfMonth - 1));
     }
 
     public PunchIn getMonthlyPunchIn(LocalDate today){
