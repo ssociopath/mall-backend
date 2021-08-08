@@ -82,6 +82,15 @@ public class RedisUtil {
         return key==null? null:redisTemplate.opsForValue().get(key);
     }
 
+    public static Long incrementKey(String key){
+        try{
+            return redisTemplate.opsForValue().increment(key);
+        }catch (Exception e){
+            log.info(e.getMessage());
+        }
+        return null;
+    }
+
     public static Long decrementKey(String key){
         try{
             return redisTemplate.opsForValue().decrement(key);

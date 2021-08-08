@@ -40,4 +40,9 @@ public interface PdtInfoRepository extends DataRepository<PdtInf,Integer> {
      */
     @Transactional
     void deleteByProductId(Integer productId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update product_info set inventory=0 where product_id=:productId",nativeQuery=true)
+    void updateInventoryByProductId(@Param("productId") Integer productId);
 }

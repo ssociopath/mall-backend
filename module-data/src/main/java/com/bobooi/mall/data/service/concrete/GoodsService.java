@@ -42,7 +42,11 @@ public class GoodsService extends BaseDataService<PdtInf, Integer> {
     @Resource
     SupplierInfoRepository supplierInfoRepository;
 
-    public List<ProductTypeBO> getProductTypeBO(Integer productId) {
+    public List<PdtType> getAllProductType() {
+        return pdtTypeRepository.findAll();
+    }
+
+    public List<ProductTypeBO> getProductTypeBOByProductId(Integer productId) {
         return pdtAddiInfoRepository.findAllByProductId(productId).stream().map(pdtAddiInf -> {
             Integer productTypeId = pdtAddiInf.getProductTypeId();
             String productTypeName = pdtTypeRepository.findByProductTypeId(productTypeId).getProductTypeName();

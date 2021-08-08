@@ -41,6 +41,17 @@ public class GoodsController {
     OrderService orderService;
 
     /**
+     * 获取所有商品类型
+     *
+     * @return 商品类型列表
+     */
+    @ApiOperation("获取所有商品类型列表")
+    @GetMapping("/type")
+    public ApplicationResponse<List<PdtType>> getAllProductTypes() {
+        return ApplicationResponse.succeed(goodsService.getAllProductType());
+    }
+
+    /**
      * 获取所有商品分类
      *
      * @return 商品分类列表
@@ -167,9 +178,9 @@ public class GoodsController {
         return ApplicationResponse.succeed(
                 goodsService.findAll()
                         .stream()
-                        .filter(pdfInfo -> pdfInfo.getRestTime() != null)
+                        .filter(pdfInfo -> pdfInfo.getRestTime() != null && pdfInfo.getInventory()>0)
                         .map(pdtInfo -> {
-                            orderService.initRedis(pdtInfo.getProductId());
+                            orderService.initRedis(pdtInfo.getProductId(), pdtInfo.getInventory());
                             return GoodsVO.fromPdtInfAndSupplierInf(pdtInfo, supplierInfoRepository.findBySupplierId(pdtInfo.getSupplierId()));
                         })
                         .collect(Collectors.toList())
@@ -185,7 +196,7 @@ public class GoodsController {
     @GetMapping("/productDetailInfo/{productId}")
     public ApplicationResponse<PdtDetailVO> getPdtDetailInfoByProductId(@PathVariable Integer productId) {
         List<PdtDetailInf> pdtDetailInfList = goodsService.getPdtDetailInfoByPdtId(productId);
-        List<ProductTypeBO> productTypeBOList = goodsService.getProductTypeBO(productId);
+        List<ProductTypeBO> productTypeBOList = goodsService.getProductTypeBOByProductId(productId);
         return ApplicationResponse.succeed(PdtDetailVO.fromPdtDetailInfListAndProductTypeList(pdtDetailInfList, productTypeBOList));
     }
 

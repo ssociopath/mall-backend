@@ -112,8 +112,8 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
         return orderMasterRepository.findAllByCustomerId(userService.info().getCustomerId());
     }
 
-     public void initRedis(Integer productId) {
-         RedisUtil.setObject("product" + productId, 20);
+     public void initRedis(Integer productId, Integer inventory) {
+         RedisUtil.setObject("product" + productId, inventory);
          goodSecMap.put(productId,true);
      }
 
@@ -123,16 +123,23 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
              Long count = RedisUtil.decrementKey("product" + productId);
              if(count!=null&&count<0){
                  goodSecMap.put(productId,false);
+                 RedisUtil.incrementKey("product" + productId);
                  RedisUtil.deleteKey("product" + productId);
-                 if(pdtInfoRepository.findByProductId(productId)!=null){
-                     pdtInfoRepository.deleteByProductId(productId);
-                 }
                  log.info("商品销售完了");
+                 pdtInfoRepository.updateInventoryByProductId(productId);
                  return false;
              }
-             addOrder(0,productId,1,productTypeId,customerId,
-                     userService.getUserDefaultAddr(customerId).getCustomerAddrId());
-             return true;
+             try{
+                 addOrder(0,productId,1,productTypeId,customerId,
+                         userService.getUserDefaultAddr(customerId).getCustomerAddrId());
+                 return true;
+             }catch(Exception e){
+                RedisUtil.incrementKey("product" + productId);
+                if(goodSecMap.get(productId)!=null){
+                    goodSecMap.remove(productId);
+                }
+                log.info("创建订单失败");
+             }
          }
          return false;
      }
