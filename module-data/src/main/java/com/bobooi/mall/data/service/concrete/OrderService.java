@@ -1,9 +1,5 @@
 package com.bobooi.mall.data.service.concrete;
 
-
-import com.bobooi.mall.common.exception.ApplicationException;
-import com.bobooi.mall.common.exception.AssertUtils;
-import com.bobooi.mall.common.response.SystemCodeEnum;
 import com.bobooi.mall.common.utils.jackson.JsonUtils;
 import com.bobooi.mall.data.bo.OrderBO;
 import com.bobooi.mall.data.config.redis.RedisUtil;
@@ -13,6 +9,7 @@ import com.bobooi.mall.data.entity.*;
 import com.bobooi.mall.data.repository.concrete.*;
 import com.bobooi.mall.data.service.BaseDataService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,8 +42,14 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
     OrderMasterRepository orderMasterRepository;
     @Resource
     UserService userService;
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     private ConcurrentHashMap<Integer,Boolean> goodSecMap;
+
+    public ConcurrentHashMap<Integer, Boolean> getGoodSecMap() {
+        return goodSecMap;
+    }
 
     @PostConstruct
     public void initMap(){
@@ -129,17 +132,9 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
                  pdtInfoRepository.updateInventoryByProductId(productId);
                  return false;
              }
-             try{
-                 addOrder(0,productId,1,productTypeId,customerId,
-                         userService.getUserDefaultAddr(customerId).getCustomerAddrId());
-                 return true;
-             }catch(Exception e){
-                RedisUtil.incrementKey("product" + productId);
-                if(goodSecMap.get(productId)!=null){
-                    goodSecMap.remove(productId);
-                }
-                log.info("创建订单失败");
-             }
+             OrderBO orderBO = new OrderBO(0,productId,1,productTypeId,customerId);
+             rabbitTemplate.convertAndSend("orderQueue", JsonUtils.toJsonString(orderBO));
+             return true;
          }
          return false;
      }
