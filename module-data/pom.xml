@@ -12,11 +12,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-        </dependency>
-        <!-- osa-cms -->
-        <dependency>
             <groupId>com.bobooi</groupId>
             <artifactId>module-common</artifactId>
             <version>${project.version}</version>
