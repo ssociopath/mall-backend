@@ -30,14 +30,14 @@ public class PunchInService extends BaseDataService<PunchIn, Integer> {
         return bitmap |= (1 << (dayOfMonth - 1));
     }
 
-    public PunchIn getMonthlyPunchIn(LocalDate today){
+    public PunchIn getMonthlyPunchIn(int year, int month){
         Integer customerId = userService.info().getCustomerId();
-        return punchInRepository.findPunchInByCustomerIdAndYearAndMonth(customerId, today.getYear(), today.getMonthValue())
-                .orElseGet(()-> new PunchIn(customerId, today.getYear(), today.getMonthValue(), 0));
+        return punchInRepository.findPunchInByCustomerIdAndYearAndMonth(customerId, year, month)
+                .orElseGet(()-> new PunchIn(customerId, year, month, 0));
     }
 
     public boolean dailyPunchIn(LocalDate today) {
-        PunchIn punchIn = getMonthlyPunchIn(today);
+        PunchIn punchIn = getMonthlyPunchIn(today.getYear(), today.getMonth().getValue());
         if (checkHasPunchedIn(punchIn.getDailyBitmap(), today.getDayOfMonth())) {
             return false;
         }

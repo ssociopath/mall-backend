@@ -1,5 +1,6 @@
 package com.bobooi.mall.api.controller;
 
+import com.bobooi.mall.common.utils.misc.DateUtils;
 import com.bobooi.mall.data.entity.CsmLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,11 +33,25 @@ public class PunchInController {
     @Resource
     PunchInService punchInService;
 
+    @ApiOperation("获取该用户某年某月的签到日期")
+    @PostMapping("/certain")
+    public ApplicationResponse<List<Integer>> getMonthlyPunchIn(Integer year, Integer month) {
+        PunchIn punchIn = punchInService.getMonthlyPunchIn(year, month);
+        if (punchIn == null) {
+            return ApplicationResponse.succeed(new ArrayList<>());
+        }
+        return ApplicationResponse.succeed(IntStream.range(1, DateUtils.getDaysByYearMonth(year, month) + 1)
+                .filter(day -> PunchInService.checkHasPunchedIn(punchIn.getDailyBitmap(), day))
+                .boxed()
+                .collect(Collectors.toList())
+        );
+    }
+
     @ApiOperation("获取该用户当月的签到日期")
     @GetMapping
     public ApplicationResponse<List<Integer>> getMonthlyPunchIn() {
         LocalDate today = LocalDate.now();
-        PunchIn punchIn = punchInService.getMonthlyPunchIn(LocalDate.now());
+        PunchIn punchIn = punchInService.getMonthlyPunchIn(today.getYear(), today.getMonth().getValue());
         if (punchIn == null) {
             return ApplicationResponse.succeed(new ArrayList<>());
         }

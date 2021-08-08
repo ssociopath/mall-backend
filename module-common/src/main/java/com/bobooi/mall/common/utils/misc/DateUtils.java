@@ -2,6 +2,7 @@ package com.bobooi.mall.common.utils.misc;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Calendar;
 
 /**
  * @author bobo
@@ -21,5 +22,14 @@ public class DateUtils {
 
     public static LocalDateTime fromMillisecond(long time) {
         return LocalDateTime.ofEpochSecond(time / 1000, (int) (time % 1000), DEFAULT_ZONE);
+    }
+
+    public static int getDaysByYearMonth(int year, int month) {
+        Calendar a = Calendar.getInstance();
+        a.set(Calendar.YEAR, year);
+        a.set(Calendar.MONTH, month - 1);
+        a.set(Calendar.DATE, 1);
+        a.roll(Calendar.DATE, -1);
+        return a.get(Calendar.DATE);
     }
 }
