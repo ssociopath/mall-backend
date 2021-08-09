@@ -1,6 +1,6 @@
 package com.bobooi.mall.api.config.shiro;
 
-import com.bobooi.mall.data.entity.CsmLogin;
+import com.bobooi.mall.data.entity.customer.CsmLogin;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -13,9 +13,9 @@ import org.jsoup.internal.StringUtil;
 import org.springframework.stereotype.Service;
 import com.bobooi.mall.api.config.jwt.JwtToken;
 import com.bobooi.mall.common.utils.misc.JwtUtil;
-import com.bobooi.mall.data.entity.RolePermission;
-import com.bobooi.mall.data.repository.concrete.RolePermissionRepository;
-import com.bobooi.mall.data.repository.concrete.CsmLoginRepository;
+import com.bobooi.mall.data.entity.customer.RolePermission;
+import com.bobooi.mall.data.repository.concrete.customer.RolePermissionRepository;
+import com.bobooi.mall.data.repository.concrete.customer.CsmLoginRepository;
 import com.bobooi.mall.data.service.concrete.PermissionService;
 import com.bobooi.mall.data.service.concrete.RoleService;
 

@@ -1,8 +1,8 @@
 package com.bobooi.mall.data.bo;
 
-import com.bobooi.mall.data.entity.CartGoods;
-import com.bobooi.mall.data.entity.PdtInf;
-import com.bobooi.mall.data.entity.PdtType;
+import com.bobooi.mall.data.entity.product.CartGoods;
+import com.bobooi.mall.data.entity.product.PdtInf;
+import com.bobooi.mall.data.entity.product.PdtType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

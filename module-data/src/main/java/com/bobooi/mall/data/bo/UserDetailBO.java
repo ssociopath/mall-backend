@@ -1,7 +1,7 @@
 package com.bobooi.mall.data.bo;
 
-import com.bobooi.mall.data.entity.CsmInf;
-import com.bobooi.mall.data.entity.CsmLogin;
+import com.bobooi.mall.data.entity.customer.CsmInf;
+import com.bobooi.mall.data.entity.customer.CsmLogin;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

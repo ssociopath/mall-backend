@@ -1,6 +1,6 @@
 package com.bobooi.mall.api.module.vo;
 
-import com.bobooi.mall.data.entity.CsmLogin;
+import com.bobooi.mall.data.entity.customer.CsmLogin;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

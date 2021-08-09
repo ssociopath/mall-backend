@@ -3,7 +3,7 @@ package com.bobooi.mall.data.service.concrete;
 import com.bobooi.mall.data.service.BaseDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.bobooi.mall.data.entity.Permission;
+import com.bobooi.mall.data.entity.customer.Permission;
 
 /**
  * @author bobo

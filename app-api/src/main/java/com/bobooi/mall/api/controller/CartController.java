@@ -5,10 +5,8 @@ import com.bobooi.mall.common.exception.ApplicationException;
 import com.bobooi.mall.common.exception.AssertUtils;
 import com.bobooi.mall.common.response.ApplicationResponse;
 import com.bobooi.mall.common.response.SystemCodeEnum;
-import com.bobooi.mall.common.utils.misc.JwtUtil;
-import com.bobooi.mall.data.entity.CartGoods;
-import com.bobooi.mall.data.entity.CsmLogin;
-import com.bobooi.mall.data.repository.concrete.CartGoodsRepository;
+import com.bobooi.mall.data.entity.product.CartGoods;
+import com.bobooi.mall.data.entity.customer.CsmLogin;
 import com.bobooi.mall.data.service.concrete.CartGoodsService;
 import com.bobooi.mall.data.service.concrete.UserService;
 import io.swagger.annotations.Api;
@@ -16,8 +14,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

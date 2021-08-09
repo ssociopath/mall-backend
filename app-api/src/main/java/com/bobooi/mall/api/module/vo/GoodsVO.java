@@ -1,7 +1,7 @@
 package com.bobooi.mall.api.module.vo;
 
-import com.bobooi.mall.data.entity.PdtInf;
-import com.bobooi.mall.data.entity.SupplierInf;
+import com.bobooi.mall.data.entity.product.PdtInf;
+import com.bobooi.mall.data.entity.product.SupplierInf;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

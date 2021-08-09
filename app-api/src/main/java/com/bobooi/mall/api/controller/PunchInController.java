@@ -1,17 +1,13 @@
 package com.bobooi.mall.api.controller;
 
 import com.bobooi.mall.common.utils.misc.DateUtils;
-import com.bobooi.mall.data.entity.CsmLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.web.bind.annotation.*;
 import com.bobooi.mall.common.response.ApplicationResponse;
 import com.bobooi.mall.common.response.SystemCodeEnum;
-import com.bobooi.mall.common.utils.misc.JwtUtil;
-import com.bobooi.mall.data.entity.PunchIn;
+import com.bobooi.mall.data.entity.customer.PunchIn;
 import com.bobooi.mall.data.service.concrete.PunchInService;
-import com.bobooi.mall.data.service.concrete.UserService;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;

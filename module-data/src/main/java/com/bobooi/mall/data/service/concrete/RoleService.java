@@ -1,6 +1,6 @@
 package com.bobooi.mall.data.service.concrete;
 
-import com.bobooi.mall.data.entity.Role;
+import com.bobooi.mall.data.entity.customer.Role;
 import com.bobooi.mall.data.service.BaseDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

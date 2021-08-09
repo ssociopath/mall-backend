@@ -1,10 +1,10 @@
 package com.bobooi.mall.data.service.concrete;
 
-import com.bobooi.mall.data.repository.concrete.PunchInRepository;
+import com.bobooi.mall.data.repository.concrete.customer.PunchInRepository;
 import com.bobooi.mall.data.service.BaseDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.bobooi.mall.data.entity.PunchIn;
+import com.bobooi.mall.data.entity.customer.PunchIn;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;

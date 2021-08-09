@@ -2,28 +2,23 @@ package com.bobooi.mall.api.controller;
 
 import com.bobooi.mall.api.module.vo.UserDetailVO;
 import com.bobooi.mall.api.module.vo.UserVO;
-import com.bobooi.mall.data.entity.CsmAddr;
-import com.bobooi.mall.data.entity.CsmLogin;
+import com.bobooi.mall.data.entity.customer.CsmAddr;
+import com.bobooi.mall.data.entity.customer.CsmLogin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import com.bobooi.mall.common.exception.ApplicationException;
 import com.bobooi.mall.common.response.ApplicationResponse;
 import com.bobooi.mall.common.response.SystemCodeEnum;
 import com.bobooi.mall.common.utils.misc.Constant;
 import com.bobooi.mall.common.utils.misc.JwtUtil;
 import com.bobooi.mall.data.config.redis.RedisUtil;
-import com.bobooi.mall.data.bo.valid.UserEditValidGroup;
-import com.bobooi.mall.data.bo.valid.UserLoginValidGroup;
 import com.bobooi.mall.data.service.concrete.UserService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 

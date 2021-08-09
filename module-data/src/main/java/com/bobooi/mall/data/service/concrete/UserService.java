@@ -6,17 +6,17 @@ import com.bobooi.mall.common.response.SystemCodeEnum;
 import com.bobooi.mall.common.utils.misc.Constant;
 import com.bobooi.mall.common.utils.misc.JwtUtil;
 import com.bobooi.mall.data.bo.UserDetailBO;
-import com.bobooi.mall.data.entity.CsmAddr;
-import com.bobooi.mall.data.entity.CsmInf;
-import com.bobooi.mall.data.repository.concrete.CsmAddrRepository;
-import com.bobooi.mall.data.repository.concrete.CsmInfRepository;
-import com.bobooi.mall.data.repository.concrete.CsmLoginRepository;
+import com.bobooi.mall.data.entity.customer.CsmAddr;
+import com.bobooi.mall.data.entity.customer.CsmInf;
+import com.bobooi.mall.data.repository.concrete.customer.CsmAddrRepository;
+import com.bobooi.mall.data.repository.concrete.customer.CsmInfRepository;
+import com.bobooi.mall.data.repository.concrete.customer.CsmLoginRepository;
 import com.bobooi.mall.data.service.BaseDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 
-import com.bobooi.mall.data.entity.CsmLogin;
+import com.bobooi.mall.data.entity.customer.CsmLogin;
 
 import javax.annotation.Resource;
 import java.util.List;

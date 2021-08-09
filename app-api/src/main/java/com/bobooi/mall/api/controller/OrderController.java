@@ -5,7 +5,7 @@ import com.bobooi.mall.common.exception.AssertUtils;
 import com.bobooi.mall.common.response.ApplicationResponse;
 import com.bobooi.mall.common.response.SystemCodeEnum;
 import com.bobooi.mall.data.dto.BatchOperationResultDTO;
-import com.bobooi.mall.data.entity.OrderMaster;
+import com.bobooi.mall.data.entity.product.OrderMaster;
 import com.bobooi.mall.data.service.concrete.OrderService;
 import com.bobooi.mall.data.service.concrete.UserService;
 import io.swagger.annotations.Api;
