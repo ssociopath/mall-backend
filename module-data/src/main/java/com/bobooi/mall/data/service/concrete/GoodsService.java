@@ -9,9 +9,6 @@ import com.bobooi.mall.data.entity.product.*;
 import com.bobooi.mall.data.repository.concrete.product.*;
 import com.bobooi.mall.data.service.BaseDataService;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.client.core.PageParams;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
