@@ -2,6 +2,7 @@ package com.bobooi.mall.api.controller;
 
 import com.bobooi.mall.api.module.vo.UserDetailVO;
 import com.bobooi.mall.api.module.vo.UserVO;
+import com.bobooi.mall.data.bo.PageParam;
 import com.bobooi.mall.data.entity.customer.CsmAddr;
 import com.bobooi.mall.data.entity.customer.CsmLogin;
 import io.swagger.annotations.Api;
@@ -51,11 +52,11 @@ public class UserController {
      *
      * @return 用户地址列表
      */
-    @ApiOperation("管理员获取用户地址列表")
+    @ApiOperation("管理员获取用户地址列表【分页！！！！！】")
     @GetMapping("/addr")
     @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
-    public ApplicationResponse<List<CsmAddr>> getUserAddr() {
-        return ApplicationResponse.succeed(userService.getUserAddrList());
+    public ApplicationResponse<List<CsmAddr>> getUserAddr(PageParam pageParam) {
+        return ApplicationResponse.succeed(userService.getUserAddrList(pageParam));
     }
 
     /**
@@ -63,11 +64,11 @@ public class UserController {
      *
      * @return 用户列表
      */
-    @ApiOperation("管理员获取用户详细信息列表")
+    @ApiOperation("管理员获取用户详细信息列表【分页！！！！！】")
     @GetMapping
     @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
-    public ApplicationResponse<List<UserDetailVO>> getAll() {
-        return ApplicationResponse.succeed(userService.getDetailUserList().stream()
+    public ApplicationResponse<List<UserDetailVO>> getAll(PageParam pageParam) {
+        return ApplicationResponse.succeed(userService.getDetailUserList(pageParam).stream()
                 .map(UserDetailVO::fromUserDetailBO)
                 .collect(Collectors.toList()));
     }
@@ -204,11 +205,11 @@ public class UserController {
      *
      * @return 用户地址列表
      */
-    @ApiOperation("管理员获取所有用户所有地址信息")
+    @ApiOperation("管理员获取所有用户所有地址信息【分页！！！！！！】")
     @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
     @GetMapping("/allAddressInfo")
-    public ApplicationResponse<List<CsmAddr>> getAllAddressInfo() {
-        return ApplicationResponse.succeed(userService.getAllCsmAddress());
+    public ApplicationResponse<List<CsmAddr>> getAllAddressInfo(PageParam pageParam) {
+        return ApplicationResponse.succeed(userService.getAllCsmAddress(pageParam));
     }
 
     /**

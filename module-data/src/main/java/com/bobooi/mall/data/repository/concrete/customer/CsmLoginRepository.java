@@ -1,7 +1,11 @@
 package com.bobooi.mall.data.repository.concrete.customer;
 
+import com.bobooi.mall.data.bo.PageParam;
 import com.bobooi.mall.data.entity.customer.CsmLogin;
 import com.bobooi.mall.data.repository.DataRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * @author bobo
@@ -24,4 +28,7 @@ public interface CsmLoginRepository extends DataRepository<CsmLogin, Integer> {
      * @return 如果存在，返回user，否则返回null
      */
     CsmLogin findCsmLoginByLoginName(String loginName);
+
+    @Query(value = "select * from customer_login where role_id=1",nativeQuery = true)
+    Page<CsmLogin> findALLWithoutAdmin(Pageable pageable);
 }

@@ -3,11 +3,15 @@ package com.bobooi.mall.data.service.concrete;
 import com.bobooi.mall.common.exception.ApplicationException;
 import com.bobooi.mall.common.exception.AssertUtils;
 import com.bobooi.mall.common.response.SystemCodeEnum;
+import com.bobooi.mall.data.bo.PageParam;
 import com.bobooi.mall.data.bo.ProductTypeBO;
 import com.bobooi.mall.data.entity.product.*;
 import com.bobooi.mall.data.repository.concrete.product.*;
 import com.bobooi.mall.data.service.BaseDataService;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.client.core.PageParams;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -42,8 +46,8 @@ public class GoodsService extends BaseDataService<PdtInf, Integer> {
     @Resource
     SupplierInfoRepository supplierInfoRepository;
 
-    public List<PdtType> getAllProductType() {
-        return pdtTypeRepository.findAll();
+    public List<PdtType> getAllProductType(PageParam pageParam) {
+        return pdtTypeRepository.findAll(PageParam.getPageAble(pageParam)).getContent();
     }
 
     public List<ProductTypeBO> getProductTypeBOByProductId(Integer productId) {
@@ -89,15 +93,12 @@ public class GoodsService extends BaseDataService<PdtInf, Integer> {
         return pdtCategoryRepository.save(pdtCategoryInDB);
     }
 
-    /**
-     * 获取商品分类id为categoryId的所有商品信息
-     *
-     * @param categoryId 商品分类id
-     * @return
-     */
-    public List<PdtInf> getAllPdtInfByCategoryId(Integer categoryId) {
+    public List<PdtInf> getNoSecPdtInfByCategoryId(Integer categoryId, PageParam pageParam) {
+        return pdtInfoRepository.findAllByCategoryIdWithoutSec(categoryId, PageParam.getPageAble(pageParam)).getContent();
+    }
 
-        return pdtInfoRepository.findAllByCategoryId(categoryId);
+    public List<PdtInf> getSecPdtInfByCategoryId( PageParam pageParam) {
+        return pdtInfoRepository.findAllByCategoryIdWithSec(PageParam.getPageAble(pageParam)).getContent();
     }
 
     /**
@@ -117,8 +118,8 @@ public class GoodsService extends BaseDataService<PdtInf, Integer> {
      *
      * @return
      */
-    public List<PdtDetailInf> getAllPdtDetailInfo() {
-        return pdtDetailViewRepository.findAll();
+    public List<PdtDetailInf> getAllPdtDetailInfo(PageParam pageParam) {
+        return pdtDetailViewRepository.findAll(PageParam.getPageAble(pageParam)).getContent();
     }
 
     /**
@@ -126,8 +127,8 @@ public class GoodsService extends BaseDataService<PdtInf, Integer> {
      *
      * @return
      */
-    public List<SupplierInf> getAllSupplierInfo() {
-        return supplierInfoRepository.findAll();
+    public List<SupplierInf> getAllSupplierInfo(PageParam pageParam) {
+        return supplierInfoRepository.findAll(PageParam.getPageAble(pageParam)).getContent();
     }
 
     /**

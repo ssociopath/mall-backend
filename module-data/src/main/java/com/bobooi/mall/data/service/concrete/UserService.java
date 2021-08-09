@@ -5,6 +5,7 @@ import com.bobooi.mall.common.exception.AssertUtils;
 import com.bobooi.mall.common.response.SystemCodeEnum;
 import com.bobooi.mall.common.utils.misc.Constant;
 import com.bobooi.mall.common.utils.misc.JwtUtil;
+import com.bobooi.mall.data.bo.PageParam;
 import com.bobooi.mall.data.bo.UserDetailBO;
 import com.bobooi.mall.data.entity.customer.CsmAddr;
 import com.bobooi.mall.data.entity.customer.CsmInf;
@@ -46,13 +47,12 @@ public class UserService extends BaseDataService<CsmLogin, Integer> {
                 .append(csmAddr.getAddress()).toString();
     }
 
-    public List<CsmAddr> getUserAddrList(){
-        return csmAddrRepository.findAll();
+    public List<CsmAddr> getUserAddrList(PageParam pageParam){
+        return csmAddrRepository.findAll(PageParam.getPageAble(pageParam)).getContent();
     }
 
-    public List<UserDetailBO> getDetailUserList(){
-        return csmLoginRepository.findAll().stream()
-                .filter(csmLogin -> csmLogin.getRoleId()==1)
+    public List<UserDetailBO> getDetailUserList(PageParam pageParam){
+        return csmLoginRepository.findALLWithoutAdmin(PageParam.getPageAble(pageParam)).getContent().stream()
                 .map(csmLogin -> new UserDetailBO(csmLogin, csmInfRepository.findByCustomerId(csmLogin.getCustomerId())))
                 .collect(Collectors.toList());
     }
@@ -83,8 +83,8 @@ public class UserService extends BaseDataService<CsmLogin, Integer> {
         return csmAddrRepository.findByCustomerIdAndIsDefault(customerId, 1);
     }
 
-    public List<CsmAddr> getAllCsmAddress(){
-        return csmAddrRepository.findAll();
+    public List<CsmAddr> getAllCsmAddress(PageParam pageParam){
+        return csmAddrRepository.findAll(PageParam.getPageAble(pageParam)).getContent();
     }
 
     public List<CsmAddr> getCsmAddressListByCustomerId(Integer customerId){

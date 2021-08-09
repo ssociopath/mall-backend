@@ -4,6 +4,7 @@ import com.bobooi.mall.common.exception.ApplicationException;
 import com.bobooi.mall.common.exception.AssertUtils;
 import com.bobooi.mall.common.response.SystemCodeEnum;
 import com.bobooi.mall.data.bo.CartGoodsBO;
+import com.bobooi.mall.data.bo.PageParam;
 import com.bobooi.mall.data.entity.product.CartGoods;
 import com.bobooi.mall.data.entity.product.PdtAddiInf;
 import com.bobooi.mall.data.entity.product.PdtInf;
@@ -52,12 +53,13 @@ public class CartGoodsService extends BaseDataService<CartGoods, Integer> {
         return cartGoods;
     }
 
-    public List<CartGoodsBO> getCartGoodsList(Integer customerId){
-        return cartGoodsRepository.findAllByCustomerId(customerId).stream().map(cartGoods->{
-            PdtInf pdtInf = pdtInfoRepository.findByProductId(cartGoods.getProductId());
-            PdtType pdtType = pdtTypeRepository.getById(cartGoods.getProductTypeId());
-            return new CartGoodsBO(cartGoods,pdtInf,pdtType);
-        }).collect(Collectors.toList());
+    public List<CartGoodsBO> getCartGoodsList(Integer customerId, PageParam pageParam){
+        return cartGoodsRepository.findAllByCustomerId(customerId, PageParam.getPageAble(pageParam)).getContent()
+                .stream().map(cartGoods->{
+                    PdtInf pdtInf = pdtInfoRepository.findByProductId(cartGoods.getProductId());
+                    PdtType pdtType = pdtTypeRepository.getById(cartGoods.getProductTypeId());
+                    return new CartGoodsBO(cartGoods,pdtInf,pdtType);
+                }).collect(Collectors.toList());
     }
 
     public void deleteByCartGoodsId(Integer cartGoodsId){

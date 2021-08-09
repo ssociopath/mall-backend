@@ -2,6 +2,7 @@ package com.bobooi.mall.api.controller;
 
 import com.bobooi.mall.api.module.vo.GoodsVO;
 import com.bobooi.mall.api.module.vo.PdtDetailVO;
+import com.bobooi.mall.data.bo.PageParam;
 import com.bobooi.mall.data.bo.ProductTypeBO;
 import com.bobooi.mall.common.exception.ApplicationException;
 import com.bobooi.mall.common.exception.AssertUtils;
@@ -45,10 +46,10 @@ public class GoodsController {
      *
      * @return 商品类型列表
      */
-    @ApiOperation("获取所有商品类型列表")
+    @ApiOperation("获取所有商品类型列表【分页！！！！！】")
     @GetMapping("/type")
-    public ApplicationResponse<List<PdtType>> getAllProductTypes() {
-        return ApplicationResponse.succeed(goodsService.getAllProductType());
+    public ApplicationResponse<List<PdtType>> getAllProductTypes(PageParam pageParam) {
+        return ApplicationResponse.succeed(goodsService.getAllProductType(pageParam));
     }
 
     /**
@@ -80,7 +81,7 @@ public class GoodsController {
      */
     @ApiOperation("删除商品分类信息")
     @DeleteMapping("/category/{categoryId}")
-    public ApplicationResponse deleteProductCategory(@PathVariable Integer categoryId) {
+    public ApplicationResponse<Void> deleteProductCategory(@PathVariable Integer categoryId) {
         AssertUtils.notNull(categoryId, new ApplicationException(SystemCodeEnum.ARGUMENT_MISSING));
         goodsService.deleteProductCategory(categoryId);
         return ApplicationResponse.succeed("商品分类删除成功");
@@ -105,10 +106,10 @@ public class GoodsController {
      *
      * @return 供应商列表
      */
-    @ApiOperation("获取所有供应商列表")
+    @ApiOperation("获取所有供应商列表【分页！！！！！！】")
     @GetMapping("/allSupplierInfo")
-    public ApplicationResponse<List<SupplierInf>> getAllSupplierInfo() {
-        return ApplicationResponse.succeed(goodsService.getAllSupplierInfo());
+    public ApplicationResponse<List<SupplierInf>> getAllSupplierInfo(PageParam pageParam) {
+        return ApplicationResponse.succeed(goodsService.getAllSupplierInfo(pageParam));
     }
 
     /**
@@ -151,19 +152,18 @@ public class GoodsController {
     }
 
     /**
-     * 根据商品分类id获取所有商品数据（未分页）
+     * 根据商品分类id获取所有商品数据
      *
      * @return 该分类下所有商品展示数据【不含秒杀商品】
      */
-    @ApiOperation("根据商品分类id获取所有商品展示数据【不含秒杀商品】")
+    @ApiOperation("根据商品分类id获取所有非秒杀商品展示数据【分页！！！！！！】")
     @GetMapping("/allProductInfo/{categoryId}")
-    public ApplicationResponse<List<GoodsVO>> getAllProductInfoByCategoryId(@PathVariable Integer categoryId) {
+    public ApplicationResponse<List<GoodsVO>> getAllProductInfoByCategoryId(@PathVariable Integer categoryId, PageParam pageParam) {
         return ApplicationResponse.succeed(
-                goodsService.getAllPdtInfByCategoryId(categoryId)
-                        .stream()
-                        .filter(pdfInfo -> pdfInfo.getRestTime() == null)
-                        .map(pdtInfo -> GoodsVO.fromPdtInfAndSupplierInf(pdtInfo, supplierInfoRepository.findBySupplierId(pdtInfo.getSupplierId()))
-                        ).collect(Collectors.toList())
+                goodsService.getNoSecPdtInfByCategoryId(categoryId, pageParam).stream()
+                        .map(pdtInfo ->
+                                GoodsVO.fromPdtInfAndSupplierInf(pdtInfo, supplierInfoRepository.findBySupplierId(pdtInfo.getSupplierId())))
+                        .collect(Collectors.toList())
         );
     }
 
@@ -172,11 +172,11 @@ public class GoodsController {
      *
      * @return 所有秒杀商品展示数据
      */
-    @ApiOperation("获取所有秒杀商品展示数据")
+    @ApiOperation("获取所有秒杀商品展示数据【分页！！！！！！】")
     @GetMapping("/allSecProductInfo")
-    public ApplicationResponse<List<GoodsVO>> getAllSecProductInfo() {
+    public ApplicationResponse<List<GoodsVO>> getAllSecProductInfo(PageParam pageParam) {
         return ApplicationResponse.succeed(
-                goodsService.findAll()
+                goodsService.getSecPdtInfByCategoryId(pageParam)
                         .stream()
                         .filter(pdfInfo -> pdfInfo.getRestTime() != null && pdfInfo.getInventory()>0)
                         .map(pdtInfo -> {
@@ -205,10 +205,10 @@ public class GoodsController {
      *
      * @return 所有商品详细数据
      */
-    @ApiOperation("获取所有商品详细数据")
+    @ApiOperation("获取所有商品详细数据【分页！！！！！！】")
     @GetMapping("/allProductDetailInfo")
-    public ApplicationResponse<List<PdtDetailInf>> getAllPdtDetailInfo() {
-        return ApplicationResponse.succeed(goodsService.getAllPdtDetailInfo());
+    public ApplicationResponse<List<PdtDetailInf>> getAllPdtDetailInfo(PageParam pageParam) {
+        return ApplicationResponse.succeed(goodsService.getAllPdtDetailInfo(pageParam));
     }
 
     /**

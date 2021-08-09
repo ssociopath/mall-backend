@@ -2,6 +2,8 @@ package com.bobooi.mall.data.repository.concrete.product;
 
 import com.bobooi.mall.data.entity.product.PdtInf;
 import com.bobooi.mall.data.repository.DataRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,13 +18,12 @@ import java.util.List;
  * @date 2021/8/4
  */
 public interface PdtInfoRepository extends DataRepository<PdtInf,Integer> {
-    /**
-     * 根据商品分类id获取所有商品
-     *
-     * @param categoryId 商品分类id
-     * @return
-     */
-    List<PdtInf> findAllByCategoryId(Integer categoryId);
+
+    @Query(value = "select * from product_info where inventory!=0 and rest_time IS NULL and category_id=:categoryId",nativeQuery = true)
+    Page<PdtInf> findAllByCategoryIdWithoutSec(@Param("categoryId") Integer categoryId, Pageable pageable);
+
+    @Query(value = "select * from product_info where inventory!=0 and rest_time IS NOT NULL",nativeQuery = true)
+    Page<PdtInf> findAllByCategoryIdWithSec(Pageable pageable);
 
     /**
      * 根据商品id获取商品信息

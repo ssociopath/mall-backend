@@ -3,6 +3,7 @@ package com.bobooi.mall.data.service;
 import com.bobooi.mall.common.component.BeanHelper;
 import com.bobooi.mall.common.exception.ApplicationException;
 import com.bobooi.mall.common.exception.AssertUtils;
+import com.bobooi.mall.data.bo.PageParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,10 @@ public abstract class BaseDataService<Entity, Id> {
 
     public List<Entity> findAll() {
         return entityRepository.findAll();
+    }
+
+    public List<Entity> findAll(PageParam pageParam) {
+        return entityRepository.findAll(PageParam.getPageAble(pageParam)).getContent();
     }
 
     public List<Entity> findAll(Example<Entity> example) {

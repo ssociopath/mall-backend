@@ -5,6 +5,7 @@ import com.bobooi.mall.common.exception.ApplicationException;
 import com.bobooi.mall.common.exception.AssertUtils;
 import com.bobooi.mall.common.response.ApplicationResponse;
 import com.bobooi.mall.common.response.SystemCodeEnum;
+import com.bobooi.mall.data.bo.PageParam;
 import com.bobooi.mall.data.entity.product.CartGoods;
 import com.bobooi.mall.data.entity.customer.CsmLogin;
 import com.bobooi.mall.data.service.concrete.CartGoodsService;
@@ -36,14 +37,14 @@ public class CartController {
      * 根据用户id获取购物车
      * @return 用户购物车信息
      */
-    @ApiOperation("获取当前用户购物车内容")
+    @ApiOperation("获取当前用户购物车内容【分页！！！！！】")
     @GetMapping
-    public ApplicationResponse<List<CartGoodsVO>> getUserCart() {
+    public ApplicationResponse<List<CartGoodsVO>> getUserCart(PageParam pageParam) {
         CsmLogin csmLogin = userService.info();
         if(csmLogin ==null){
             return ApplicationResponse.fail(SystemCodeEnum.ARGUMENT_WRONG, "用户不存在！");
         }
-        return ApplicationResponse.succeed(cartGoodsService.getCartGoodsList(csmLogin.getCustomerId())
+        return ApplicationResponse.succeed(cartGoodsService.getCartGoodsList(csmLogin.getCustomerId(), pageParam)
                 .stream().map(CartGoodsVO::fromCartGoodsBO).collect(Collectors.toList()));
     }
 

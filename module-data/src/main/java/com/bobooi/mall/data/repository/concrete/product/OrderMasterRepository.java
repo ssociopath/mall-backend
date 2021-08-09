@@ -2,6 +2,8 @@ package com.bobooi.mall.data.repository.concrete.product;
 
 import com.bobooi.mall.data.entity.product.OrderMaster;
 import com.bobooi.mall.data.repository.DataRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -12,5 +14,5 @@ import java.util.List;
  * @date 2021/8/4
  */
 public interface OrderMasterRepository extends DataRepository<OrderMaster,Integer> {
-    List<OrderMaster> findAllByCustomerId(Integer customerId);
+    Page<OrderMaster> findAllByCustomerId(Integer customerId, Pageable pageable);
 }

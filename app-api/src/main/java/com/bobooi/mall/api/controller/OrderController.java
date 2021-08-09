@@ -4,6 +4,7 @@ import com.bobooi.mall.common.exception.ApplicationException;
 import com.bobooi.mall.common.exception.AssertUtils;
 import com.bobooi.mall.common.response.ApplicationResponse;
 import com.bobooi.mall.common.response.SystemCodeEnum;
+import com.bobooi.mall.data.bo.PageParam;
 import com.bobooi.mall.data.dto.BatchOperationResultDTO;
 import com.bobooi.mall.data.entity.product.OrderMaster;
 import com.bobooi.mall.data.service.concrete.OrderService;
@@ -32,17 +33,17 @@ public class OrderController {
     @Resource
     private UserService userService;
 
-    @ApiOperation("获取所有订单信息【需要管理员】")
+    @ApiOperation("获取所有订单信息【分页！！！！！】")
     @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
     @GetMapping("/all")
-    public ApplicationResponse<List<OrderMaster>> getAllOrders() {
-        return ApplicationResponse.succeed(orderService.findAll());
+    public ApplicationResponse<List<OrderMaster>> getAllOrders(PageParam pageParam) {
+        return ApplicationResponse.succeed(orderService.findAll(pageParam));
     }
 
-    @ApiOperation("获取当前用户订单信息")
+    @ApiOperation("获取当前用户订单信息【分页！！！！！】")
     @GetMapping
-    public ApplicationResponse<List<OrderMaster>> getAllOrdersByUser() {
-        return ApplicationResponse.succeed(orderService.findAllByCustomerId());
+    public ApplicationResponse<List<OrderMaster>> getAllOrdersByUser(PageParam pageParam) {
+        return ApplicationResponse.succeed(orderService.findAllByCustomerId(pageParam));
     }
 
     @ApiOperation("根据购物车商品id列表生成订单")

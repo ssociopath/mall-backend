@@ -2,6 +2,7 @@ package com.bobooi.mall.data.service.concrete;
 
 import com.bobooi.mall.common.utils.jackson.JsonUtils;
 import com.bobooi.mall.data.bo.OrderBO;
+import com.bobooi.mall.data.bo.PageParam;
 import com.bobooi.mall.data.config.redis.RedisUtil;
 import com.bobooi.mall.data.dto.BatchOperationResultDTO;
 import com.bobooi.mall.data.dto.OperationResultDTO;
@@ -115,8 +116,10 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
                 }).collect(BatchOperationResultDTO.toBatchResult());
     }
 
-    public List<OrderMaster> findAllByCustomerId() {
-        return orderMasterRepository.findAllByCustomerId(userService.info().getCustomerId());
+    public List<OrderMaster> findAllByCustomerId(PageParam pageParam) {
+        return orderMasterRepository.findAllByCustomerId(
+                userService.info().getCustomerId(), PageParam.getPageAble(pageParam))
+                .getContent();
     }
 
      public void initRedis(Integer productId, Integer inventory) {
