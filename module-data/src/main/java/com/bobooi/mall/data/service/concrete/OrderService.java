@@ -1,7 +1,5 @@
 package com.bobooi.mall.data.service.concrete;
 
-import com.bobooi.mall.common.utils.jackson.JsonUtils;
-import com.bobooi.mall.data.bo.OrderBO;
 import com.bobooi.mall.data.bo.PageParam;
 import com.bobooi.mall.data.config.redis.RedisUtil;
 import com.bobooi.mall.data.dto.BatchOperationResultDTO;
@@ -14,8 +12,6 @@ import com.bobooi.mall.data.repository.concrete.product.PdtInfoRepository;
 import com.bobooi.mall.data.repository.concrete.product.PdtTypeRepository;
 import com.bobooi.mall.data.service.BaseDataService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -47,14 +43,8 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
     OrderMasterRepository orderMasterRepository;
     @Resource
     UserService userService;
-    @Autowired
-    RabbitTemplate rabbitTemplate;
 
     private ConcurrentHashMap<Integer,Boolean> goodSecMap;
-
-    public ConcurrentHashMap<Integer, Boolean> getGoodSecMap() {
-        return goodSecMap;
-    }
 
     public long getOrdersSum() {
         return orderMasterRepository.count();
@@ -143,9 +133,17 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
                  pdtInfoRepository.updateInventoryByProductId(productId);
                  return false;
              }
-             OrderBO orderBO = new OrderBO(0,productId,1,productTypeId,customerId);
-             rabbitTemplate.convertAndSend("orderQueue", JsonUtils.toJsonString(orderBO));
-             return true;
+             try{
+                 addOrder(0,productId,1,productTypeId,customerId,
+                         userService.getUserDefaultAddr(customerId).getCustomerAddrId());
+                 return true;
+             }catch(Exception e){
+                RedisUtil.incrementKey("product" + productId);
+                if(goodSecMap.get(productId)!=null){
+                    goodSecMap.remove(productId);
+                }
+                log.info("创建订单失败");
+             }
          }
          return false;
      }
