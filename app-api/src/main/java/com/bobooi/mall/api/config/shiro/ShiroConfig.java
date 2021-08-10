@@ -43,6 +43,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/user/register", "anon");
         filterChainDefinitionMap.put("/goods/**", "anon");
         filterChainDefinitionMap.put("/druid/**", "anon");
+        filterChainDefinitionMap.put("/search/**", "anon");
         //TODO 测试
         filterChainDefinitionMap.put("/secKill/**", "anon");
         //所有请求通过我们自定义的jwt过滤器
