@@ -11,5 +11,9 @@ import java.util.List;
  */
 
 public interface EsProductRepository extends ElasticRepository<ESProduct, Long> {
-    List<ESProduct> findByProductTypeName(String productTypeName);
+    List<ESProduct> findByProductNameOrSupplierNameOrCategoryNameOrProductTypeNameOrDescription(
+            String productName,String supplierName, String categoryName, String productTypeName, String description);
+
+    List<ESProduct> findByProductNameAndSupplierNameAndCategoryNameAndProductTypeNameAndDescription(
+            String productName,String supplierName, String categoryName, String productTypeName, String description);
 }
