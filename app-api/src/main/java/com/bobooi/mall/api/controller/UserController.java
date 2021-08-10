@@ -47,11 +47,6 @@ public class UserController {
         return ApplicationResponse.succeed(userService.getUserPoint());
     }
 
-    /**
-     * 管理员获取地址用户列表
-     *
-     * @return 用户地址列表
-     */
     @ApiOperation("管理员获取用户地址列表【分页！！！！！】")
     @GetMapping("/addr")
     @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
@@ -59,11 +54,13 @@ public class UserController {
         return ApplicationResponse.succeed(userService.getUserAddrList(pageParam));
     }
 
-    /**
-     * 管理员获取用户列表
-     *
-     * @return 用户列表
-     */
+    @ApiOperation("管理员获取用户地址总数【！！！！！总数】")
+    @GetMapping("/addr/sum")
+    @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
+    public ApplicationResponse<Long> getUserAddrSum() {
+        return ApplicationResponse.succeed(userService.getUserAddrSum());
+    }
+
     @ApiOperation("管理员获取用户详细信息列表【分页！！！！！】")
     @GetMapping
     @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
@@ -73,11 +70,14 @@ public class UserController {
                 .collect(Collectors.toList()));
     }
 
-    /**
-     * 获取登录信息
-     *
-     * @return 登录信息
-     */
+    @ApiOperation("管理员获取用户详细信息总数【！！！！！总数】")
+    @GetMapping("/sum")
+    @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
+    public ApplicationResponse<Long> getAllSum() {
+        return ApplicationResponse.succeed(userService.getDetailUserSum());
+    }
+
+
     @ApiOperation("获取登录信息")
     @GetMapping("/info")
     @RequiresAuthentication
@@ -90,30 +90,6 @@ public class UserController {
         // 获取当前登录用户
         return ApplicationResponse.succeed("您已经登录了", UserVO.fromUser(csmLogin));
     }
-
-//    /**
-//     * 用户注册
-//     * @return 注册后信息
-//     */
-//    @PostMapping("/register")
-//    public ApplicationResponse<UserVO> register(@Validated(UserEditValidGroup.class) CsmLogin csmLogin) {
-//        return add(csmLogin);
-//    }
-
-//    /**
-//     * 管理员新增用户
-//     * @return 新增后信息
-//     */
-//    @PostMapping
-//    @RequiresPermissions(logical = Logical.AND, value = {"user:add"})
-//    public ApplicationResponse<UserVO> add(@Validated(UserEditValidGroup.class) CsmLogin csmLogin) {
-//        try {
-//            csmLogin = userService.addUser(csmLogin);
-//        } catch (Exception exception) {
-//            throw new ApplicationException(SystemCodeEnum.ARGUMENT_WRONG, exception.getMessage());
-//        }
-//        return ApplicationResponse.succeed(UserVO.fromUser(csmLogin));
-//    }
 
     /**
      * 用户登录
@@ -200,16 +176,18 @@ public class UserController {
         return ApplicationResponse.succeed(userService.getCsmAddressListByCustomerId(userService.info().getCustomerId()));
     }
 
-    /**
-     * 管理员获取所有用户所有地址信息
-     *
-     * @return 用户地址列表
-     */
     @ApiOperation("管理员获取所有用户所有地址信息【分页！！！！！！】")
     @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
     @GetMapping("/allAddressInfo")
     public ApplicationResponse<List<CsmAddr>> getAllAddressInfo(PageParam pageParam) {
         return ApplicationResponse.succeed(userService.getAllCsmAddress(pageParam));
+    }
+
+    @ApiOperation("管理员获取所有用户所有地址总数【！！！！！！总数】")
+    @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
+    @GetMapping("/allAddressInfo/sum")
+    public ApplicationResponse<Long> getAllAddressInfoSum() {
+        return ApplicationResponse.succeed(userService.getAllCsmAddressSum());
     }
 
     /**

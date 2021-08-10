@@ -41,15 +41,16 @@ public class GoodsController {
     @Resource
     OrderService orderService;
 
-    /**
-     * 获取所有商品类型
-     *
-     * @return 商品类型列表
-     */
     @ApiOperation("获取所有商品类型列表【分页！！！！！】")
     @GetMapping("/type")
     public ApplicationResponse<List<PdtType>> getAllProductTypes(PageParam pageParam) {
         return ApplicationResponse.succeed(goodsService.getAllProductType(pageParam));
+    }
+
+    @ApiOperation("获取所有商品类型总数【！！！！！总数】")
+    @GetMapping("/type/sum")
+    public ApplicationResponse<Long> getAllProductTypesSum() {
+        return ApplicationResponse.succeed(goodsService.getAllProductTypeSum());
     }
 
     /**
@@ -110,6 +111,12 @@ public class GoodsController {
     @GetMapping("/allSupplierInfo")
     public ApplicationResponse<List<SupplierInf>> getAllSupplierInfo(PageParam pageParam) {
         return ApplicationResponse.succeed(goodsService.getAllSupplierInfo(pageParam));
+    }
+
+    @ApiOperation("获取所有供应商总数【！！！！总数】")
+    @GetMapping("/allSupplierInfo/sum")
+    public ApplicationResponse<Long> getAllSupplierInfoSum() {
+        return ApplicationResponse.succeed(goodsService.getAllSupplierInfoSum());
     }
 
     /**
@@ -200,15 +207,16 @@ public class GoodsController {
         return ApplicationResponse.succeed(PdtDetailVO.fromPdtDetailInfListAndProductTypeList(pdtDetailInfList, productTypeBOList));
     }
 
-    /**
-     * 获取所有商品详细数据
-     *
-     * @return 所有商品详细数据
-     */
     @ApiOperation("获取所有商品详细数据【分页！！！！！！】")
     @GetMapping("/allProductDetailInfo")
     public ApplicationResponse<List<PdtDetailInf>> getAllPdtDetailInfo(PageParam pageParam) {
         return ApplicationResponse.succeed(goodsService.getAllPdtDetailInfo(pageParam));
+    }
+
+    @ApiOperation("获取所有商品详细数据总数【！！！！！总数】")
+    @GetMapping("/allProductDetailInfo/sum")
+    public ApplicationResponse<Long> getAllPdtDetailInfoSum() {
+        return ApplicationResponse.succeed(goodsService.getAllPdtDetailInfoSum());
     }
 
     /**

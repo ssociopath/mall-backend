@@ -47,6 +47,10 @@ public class GoodsService extends BaseDataService<PdtInf, Integer> {
         return pdtTypeRepository.findAll(PageParam.getPageAble(pageParam)).getContent();
     }
 
+    public long getAllProductTypeSum() {
+        return pdtTypeRepository.count();
+    }
+
     public List<ProductTypeBO> getProductTypeBOByProductId(Integer productId) {
         return pdtAddiInfoRepository.findAllByProductId(productId).stream().map(pdtAddiInf -> {
             Integer productTypeId = pdtAddiInf.getProductTypeId();
@@ -110,22 +114,20 @@ public class GoodsService extends BaseDataService<PdtInf, Integer> {
         return pdtDetailInfList;
     }
 
-    /**
-     * 获取所有商品详细信息返回给管理员
-     *
-     * @return
-     */
     public List<PdtDetailInf> getAllPdtDetailInfo(PageParam pageParam) {
         return pdtDetailViewRepository.findAll(PageParam.getPageAble(pageParam)).getContent();
     }
 
-    /**
-     * 获取所有供应商信息给管理员
-     *
-     * @return
-     */
+    public long getAllPdtDetailInfoSum() {
+        return pdtDetailViewRepository.count();
+    }
+
     public List<SupplierInf> getAllSupplierInfo(PageParam pageParam) {
         return supplierInfoRepository.findAll(PageParam.getPageAble(pageParam)).getContent();
+    }
+
+    public long getAllSupplierInfoSum() {
+        return supplierInfoRepository.count();
     }
 
     /**

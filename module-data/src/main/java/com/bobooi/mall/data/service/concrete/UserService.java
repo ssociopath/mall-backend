@@ -51,10 +51,18 @@ public class UserService extends BaseDataService<CsmLogin, Integer> {
         return csmAddrRepository.findAll(PageParam.getPageAble(pageParam)).getContent();
     }
 
+    public long getUserAddrSum(){
+        return csmAddrRepository.count();
+    }
+
     public List<UserDetailBO> getDetailUserList(PageParam pageParam){
         return csmLoginRepository.findALLWithoutAdmin(PageParam.getPageAble(pageParam)).getContent().stream()
                 .map(csmLogin -> new UserDetailBO(csmLogin, csmInfRepository.findByCustomerId(csmLogin.getCustomerId())))
                 .collect(Collectors.toList());
+    }
+
+    public long getDetailUserSum(){
+        return csmLoginRepository.sumALLWithoutAdmin();
     }
 
     public CsmLogin addUser(CsmLogin csmLogin) throws Exception{
@@ -85,6 +93,10 @@ public class UserService extends BaseDataService<CsmLogin, Integer> {
 
     public List<CsmAddr> getAllCsmAddress(PageParam pageParam){
         return csmAddrRepository.findAll(PageParam.getPageAble(pageParam)).getContent();
+    }
+
+    public long getAllCsmAddressSum(){
+        return csmAddrRepository.count();
     }
 
     public List<CsmAddr> getCsmAddressListByCustomerId(Integer customerId){

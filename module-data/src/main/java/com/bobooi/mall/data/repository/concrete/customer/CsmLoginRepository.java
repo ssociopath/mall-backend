@@ -31,4 +31,7 @@ public interface CsmLoginRepository extends DataRepository<CsmLogin, Integer> {
 
     @Query(value = "select * from customer_login where role_id=1",nativeQuery = true)
     Page<CsmLogin> findALLWithoutAdmin(Pageable pageable);
+
+    @Query(value = "select count(*) from customer_login where role_id=1",nativeQuery = true)
+    long sumALLWithoutAdmin();
 }

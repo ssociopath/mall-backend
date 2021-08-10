@@ -56,6 +56,10 @@ public class OrderService extends BaseDataService<OrderMaster,Integer> {
         return goodSecMap;
     }
 
+    public long getOrdersSum() {
+        return orderMasterRepository.count();
+    }
+
     @PostConstruct
     public void initMap(){
         goodSecMap = new ConcurrentHashMap<>();

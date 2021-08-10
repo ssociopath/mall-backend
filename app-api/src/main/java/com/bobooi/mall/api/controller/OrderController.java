@@ -40,6 +40,13 @@ public class OrderController {
         return ApplicationResponse.succeed(orderService.findAll(pageParam));
     }
 
+    @ApiOperation("获取所有订单总数【！！！！！总数】")
+    @RequiresPermissions(logical = Logical.AND, value = {"csmLogin:*"})
+    @GetMapping("/all/sum")
+    public ApplicationResponse<Long> getAllOrdersSum() {
+        return ApplicationResponse.succeed(orderService.getOrdersSum());
+    }
+
     @ApiOperation("获取当前用户订单信息【分页！！！！！】")
     @GetMapping
     public ApplicationResponse<List<OrderMaster>> getAllOrdersByUser(PageParam pageParam) {
