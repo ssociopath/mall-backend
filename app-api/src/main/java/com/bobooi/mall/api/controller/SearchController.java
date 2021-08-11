@@ -6,13 +6,19 @@ import com.bobooi.mall.data.repository.concrete.search.EsProductRepository;
 import com.bobooi.mall.data.service.concrete.search.ESProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * @author bobo
@@ -30,7 +36,11 @@ public class SearchController {
     @ApiOperation("商城首页搜索栏模糊搜索")
     @GetMapping
     public ApplicationResponse<List<ESProduct>> getKeywordsMatch(String keyword) {
-        return ApplicationResponse.succeed(esProductService.findAllByKeyWord(keyword));
+        List<ESProduct> productList = esProductService.findAllByKeyWord(keyword).stream()
+                .filter(esProduct -> esProduct.getRestTime()==null)
+                .collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(ESProduct::getProductId)))
+                        , ArrayList::new));
+        return ApplicationResponse.succeed(productList);
     }
 
     @ApiOperation("每个字段均满足模糊匹配")
