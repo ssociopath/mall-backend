@@ -185,7 +185,6 @@ public class GoodsController {
         return ApplicationResponse.succeed(
                 goodsService.getSecPdtInfByCategoryId(pageParam)
                         .stream()
-                        .filter(pdfInfo -> pdfInfo.getRestTime() != null && pdfInfo.getInventory()>0)
                         .map(pdtInfo -> {
                             orderService.initRedis(pdtInfo.getProductId(), pdtInfo.getInventory());
                             return GoodsVO.fromPdtInfAndSupplierInf(pdtInfo, supplierInfoRepository.findBySupplierId(pdtInfo.getSupplierId()));

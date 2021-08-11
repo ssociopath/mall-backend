@@ -2,12 +2,9 @@ package com.bobooi.mall.api.controller;
 
 import com.bobooi.mall.common.response.ApplicationResponse;
 import com.bobooi.mall.data.entity.search.ESProduct;
-import com.bobooi.mall.data.repository.concrete.search.EsProductRepository;
 import com.bobooi.mall.data.service.concrete.search.ESProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

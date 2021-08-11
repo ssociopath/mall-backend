@@ -22,7 +22,7 @@ public interface PdtInfoRepository extends DataRepository<PdtInf,Integer> {
     @Query(value = "select * from product_info where inventory!=0 and rest_time IS NULL and category_id=:categoryId",nativeQuery = true)
     Page<PdtInf> findAllByCategoryIdWithoutSec(@Param("categoryId") Integer categoryId, Pageable pageable);
 
-    @Query(value = "select * from product_info where inventory!=0 and rest_time IS NOT NULL",nativeQuery = true)
+    @Query(value = "select * from product_info where inventory!=0 and rest_time > CURRENT_TIMESTAMP",nativeQuery = true)
     Page<PdtInf> findAllByCategoryIdWithSec(Pageable pageable);
 
     /**
